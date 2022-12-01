@@ -123,7 +123,7 @@ defmodule KinoBumblebee.TaskCell do
             model_repo_id: "ProsusAI/finbert",
             tokenizer_repo_id: "bert-base-uncased",
             default_text:
-              "Our stock predictions indicate taht we can expect a rapid growth over the next year."
+              "Our stock predictions indicate that we can expect a rapid growth over the next year."
           }
         }
       ],
@@ -214,6 +214,75 @@ defmodule KinoBumblebee.TaskCell do
         %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
         %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 10}
       ]
+    },
+    %{
+      id: "text_to_image",
+      label: "Text-to-image",
+      variants: [
+        %{
+          id: "stable_diffusion_v1_4",
+          label: "Stable Diffusion (v1.4)",
+          docs_url: "https://huggingface.co/CompVis/stable-diffusion-v1-4",
+          generation: %{
+            repo_id: "CompVis/stable-diffusion-v1-4",
+            default_text: "numbat, forest, high quality, detailed, digital art"
+          }
+        },
+        %{
+          id: "stable_diffusion_anime",
+          label: "Stable Diffusion (anime)",
+          docs_url: "https://huggingface.co/Linaqruf/anything-v3.0",
+          generation: %{
+            repo_id: "Linaqruf/anything-v3.0",
+            default_text:
+              "scenery, shibuya tokyo, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset"
+          }
+        },
+        %{
+          id: "stable_diffusion_ghibli",
+          label: "Stable Diffusion (Ghibli style)",
+          docs_url: "https://huggingface.co/nitrosocke/Ghibli-Diffusion",
+          generation: %{
+            repo_id: "nitrosocke/Ghibli-Diffusion",
+            default_text: "ghibli style numbat in forest"
+          }
+        },
+        %{
+          id: "stable_diffusion_modern_disney",
+          label: "Stable Diffusion (modern Disney style)",
+          docs_url: "https://huggingface.co/nitrosocke/mo-di-diffusion",
+          generation: %{
+            repo_id: "nitrosocke/mo-di-diffusion",
+            default_text: "modern disney style grumpy cat"
+          }
+        },
+        %{
+          id: "stable_diffusion_classic_disney",
+          label: "Stable Diffusion (classic Disney style)",
+          docs_url: "https://huggingface.co/nitrosocke/classic-anim-diffusion",
+          generation: %{
+            repo_id: "nitrosocke/classic-anim-diffusion",
+            default_text: "classic disney style albert einstein"
+          }
+        },
+        %{
+          id: "stable_diffusion_classic_redshift",
+          label: "Stable Diffusion (redshift style)",
+          docs_url: "https://huggingface.co/nitrosocke/redshift-diffusion",
+          generation: %{
+            repo_id: "nitrosocke/redshift-diffusion",
+            default_text: "redshift style batman"
+          }
+        }
+      ],
+      params: [
+        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 50},
+        %{field: "num_steps", label: "Number of steps", type: :number, default: 20},
+        %{field: "num_images_per_prompt", label: "Number of images", type: :number, default: 2},
+        %{field: "seed", label: "Seed", type: :number, default: nil}
+      ],
+      note:
+        "this is a very involved task, the generation can take a long time if you run it on a CPU. To achieve a better quality increase the number of steps, 40 is usually a better default."
     }
   ]
 
@@ -224,10 +293,13 @@ defmodule KinoBumblebee.TaskCell do
   def init(attrs, ctx) do
     task_id = attrs["task_id"] || @default_task_id
 
+    {default_backend, default_compiler} = default_backend_and_compiler()
+
     fields = %{
       "task_id" => task_id,
       "variant_id" => attrs["variant_id"] || @default_variant_id,
-      "compiler" => default_compiler()
+      "compiler" =>
+        Map.get(attrs, "compiler", default_compiler_field(default_backend, default_compiler))
     }
 
     fields =
@@ -235,7 +307,13 @@ defmodule KinoBumblebee.TaskCell do
           into: fields,
           do: {field, attrs[field] || default}
 
-    {:ok, assign(ctx, fields: fields, is_binary_backend: false)}
+    {:ok,
+     assign(ctx,
+       fields: fields,
+       missing_dep: missing_dep(fields),
+       default_backend: default_backend,
+       default_compiler: default_compiler
+     )}
   end
 
   defp field_defaults_for(task_id) do
@@ -246,14 +324,14 @@ defmodule KinoBumblebee.TaskCell do
     end
   end
 
-  defp default_compiler() do
-    compiler = Nx.Defn.default_options()[:compiler]
+  defp default_backend_and_compiler() do
     {backend, _opts} = Nx.default_backend()
-
-    if compiler == nil and backend == EXLA.Backend do
-      "exla"
-    end
+    compiler = Nx.Defn.default_options()[:compiler]
+    {backend, compiler}
   end
+
+  defp default_compiler_field(EXLA.Backend, nil), do: "exla"
+  defp default_compiler_field(_default_backend, _default_compiler), do: nil
 
   @impl true
   def handle_connect(ctx) do
@@ -261,7 +339,8 @@ defmodule KinoBumblebee.TaskCell do
      %{
        fields: ctx.assigns.fields,
        tasks: tasks(),
-       is_binary_backend: ctx.assigns.is_binary_backend
+       missing_dep: ctx.assigns.missing_dep,
+       is_binary_backend: ctx.assigns.default_backend == Nx.BinaryBackend
      }, ctx}
   end
 
@@ -276,7 +355,8 @@ defmodule KinoBumblebee.TaskCell do
         %{
           "task_id" => task_id,
           "variant_id" => variant_id,
-          "compiler" => default_compiler()
+          "compiler" =>
+            default_compiler_field(ctx.assigns.default_backend, ctx.assigns.default_compiler)
         },
         param_fields
       )
@@ -304,6 +384,16 @@ defmodule KinoBumblebee.TaskCell do
 
     broadcast_event(ctx, "update", %{"fields" => updated_fields})
 
+    missing_dep = missing_dep(ctx.assigns.fields)
+
+    ctx =
+      if missing_dep == ctx.assigns.missing_dep do
+        ctx
+      else
+        broadcast_event(ctx, "missing_dep", %{"dep" => missing_dep})
+        assign(ctx, missing_dep: missing_dep)
+      end
+
     {:noreply, ctx}
   end
 
@@ -315,17 +405,19 @@ defmodule KinoBumblebee.TaskCell do
 
   @impl true
   def scan_binding(pid, _binding, _env) do
-    is_binary_backend = match?({Nx.BinaryBackend, _opts}, Nx.default_backend())
-    send(pid, {:default_backend_check, is_binary_backend})
+    {default_backend, default_compiler} = default_backend_and_compiler()
+    send(pid, {:default_backend_and_compiler, default_backend, default_compiler})
   end
 
   @impl true
-  def handle_info({:default_backend_check, is_binary_backend}, ctx) do
-    if is_binary_backend != ctx.assigns.is_binary_backend do
-      broadcast_event(ctx, "default_backend_updated", %{"is_binary_backend" => is_binary_backend})
+  def handle_info({:default_backend_and_compiler, default_backend, default_compiler}, ctx) do
+    if default_backend != ctx.assigns.default_backend do
+      broadcast_event(ctx, "default_backend_updated", %{
+        "is_binary_backend" => default_backend == Nx.BinaryBackend
+      })
     end
 
-    {:noreply, assign(ctx, is_binary_backend: is_binary_backend)}
+    {:noreply, assign(ctx, default_backend: default_backend, default_compiler: default_compiler)}
   end
 
   @impl true
@@ -350,7 +442,8 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
 
         {:ok, featurizer} =
           Bumblebee.load_featurizer({:hf, unquote(generation.featurizer_repo_id)})
@@ -396,7 +489,9 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
         serving = Bumblebee.Text.text_classification(model_info, tokenizer, unquote(opts))
@@ -438,7 +533,9 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
         serving = Bumblebee.Text.generation(model_info, tokenizer, unquote(opts))
@@ -455,6 +552,89 @@ defmodule KinoBumblebee.TaskCell do
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
           %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
           Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(
+         %{"task_id" => "text_to_image", "variant_id" => "stable_diffusion_" <> _} = attrs
+       ) do
+    opts =
+      drop_nil_options(
+        num_steps: attrs["num_steps"],
+        num_images_per_prompt: attrs["num_images_per_prompt"],
+        safety_checker: quote(do: safety_checker),
+        safety_checker_featurizer: quote(do: featurizer)
+      ) ++
+        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        repository_id = unquote(generation.repo_id)
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "openai/clip-vit-large-patch14"})
+
+        {:ok, clip} =
+          Bumblebee.load_model({:hf, repository_id, subdir: "text_encoder"},
+            log_params_diff: false
+          )
+
+        {:ok, unet} =
+          Bumblebee.load_model({:hf, repository_id, subdir: "unet"},
+            params_filename: "diffusion_pytorch_model.bin",
+            log_params_diff: false
+          )
+
+        {:ok, vae} =
+          Bumblebee.load_model({:hf, repository_id, subdir: "vae"},
+            architecture: :decoder,
+            params_filename: "diffusion_pytorch_model.bin",
+            log_params_diff: false
+          )
+
+        {:ok, scheduler} = Bumblebee.load_scheduler({:hf, repository_id, subdir: "scheduler"})
+
+        {:ok, featurizer} =
+          Bumblebee.load_featurizer({:hf, repository_id, subdir: "feature_extractor"})
+
+        {:ok, safety_checker} =
+          Bumblebee.load_model({:hf, repository_id, subdir: "safety_checker"},
+            log_params_diff: false
+          )
+
+        serving =
+          Bumblebee.Diffusion.StableDiffusion.text_to_image(
+            clip,
+            unet,
+            vae,
+            tokenizer,
+            scheduler,
+            unquote(opts)
+          )
+      end,
+      quote do
+        text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
+        form = Kino.Control.form([text: text_input], submit: "Run")
+        frame = Kino.Frame.new()
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+
+          output = Nx.Serving.run(serving, text)
+
+          for result <- output.results do
+            Kino.Image.new(result.image)
+          end
+          |> Kino.Layout.grid(columns: 2)
+          |> then(&Kino.Frame.render(frame, &1))
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -494,4 +674,12 @@ defmodule KinoBumblebee.TaskCell do
   defp variant_from_attrs(attrs) do
     variant_by_id(attrs["task_id"], attrs["variant_id"])
   end
+
+  defp missing_dep(%{"compiler" => "exla"}) do
+    unless Code.ensure_loaded?(EXLA) do
+      ~s/{:exla, "~> 0.4.0"}/
+    end
+  end
+
+  defp missing_dep(_fields), do: nil
 end
