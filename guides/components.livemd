@@ -1,0 +1,19 @@
+# Components
+
+```elixir
+Mix.install([
+  {:kino_bumblebee, "~> 0.1.0"}
+])
+```
+
+## Kinos
+
+### Kino.Bumblebee.ScoredList
+
+TODO
+
+## Smart cells
+
+The following Smart cells are available:
+
+* **Machine-Learning task cell** - for interactively trying various models
