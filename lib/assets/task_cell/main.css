@@ -164,6 +164,10 @@ a.icon-button {
   text-decoration: none;
 }
 
+a.icon-button img {
+  height: 1.3rem;
+}
+
 .ri {
   font-size: 1.25rem;
   vertical-align: middle;
