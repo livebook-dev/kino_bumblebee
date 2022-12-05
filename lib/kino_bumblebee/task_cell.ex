@@ -13,7 +13,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "resnet",
           label: "ResNet",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/microsoft/resnet-50",
           generation: %{
             model_repo_id: "microsoft/resnet-50",
@@ -23,7 +23,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "convnext",
           label: "ConvNeXT",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/facebook/convnext-tiny-224",
           generation: %{
             model_repo_id: "facebook/convnext-tiny-224",
@@ -33,7 +33,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "vit",
           label: "ViT",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/google/vit-base-patch16-224",
           generation: %{
             model_repo_id: "google/vit-base-patch16-224",
@@ -43,7 +43,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "deit",
           label: "DeiT",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/facebook/deit-base-distilled-patch16-224",
           generation: %{
             model_repo_id: "facebook/deit-base-distilled-patch16-224",
@@ -62,7 +62,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "roberta_bertweet_emotion",
           label: "RoBERTa (BERTweet) - emotion",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/finiteautomata/bertweet-base-emotion-analysis",
           generation: %{
             model_repo_id: "finiteautomata/bertweet-base-emotion-analysis",
@@ -73,7 +73,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "roberta_bertweet_sentiment",
           label: "RoBERTa (BERTweet) - sentiment",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/finiteautomata/bertweet-base-sentiment-analysis",
           generation: %{
             model_repo_id: "finiteautomata/bertweet-base-sentiment-analysis",
@@ -84,7 +84,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "roberta_tweets_topic_single",
           label: "RoBERTa (tweets) - topic",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/cardiffnlp/tweet-topic-latest-single",
           generation: %{
             model_repo_id: "cardiffnlp/tweet-topic-latest-single",
@@ -95,7 +95,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "roberta_tweets_emoji",
           label: "RoBERTa (tweets) - emoji",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-emoji",
           generation: %{
             model_repo_id: "cardiffnlp/twitter-roberta-base-emoji",
@@ -106,7 +106,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "roberta_tweets_offensive",
           label: "RoBERTa (tweets) - offensive",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-offensive",
           generation: %{
             model_repo_id: "cardiffnlp/twitter-roberta-base-offensive",
@@ -117,7 +117,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "distilroberta_emotion",
           label: "DistilRoBERTa - emotion",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/j-hartmann/emotion-english-distilroberta-base",
           generation: %{
             model_repo_id: "j-hartmann/emotion-english-distilroberta-base",
@@ -128,7 +128,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "bert_finbert_sentiment",
           label: "BERT (FinBERT) - finance sentiment",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/ProsusAI/finbert",
           generation: %{
             model_repo_id: "ProsusAI/finbert",
@@ -150,7 +150,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "gpt2",
           label: "GPT2 (base)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/gpt2",
           generation: %{
             model_repo_id: "gpt2",
@@ -161,7 +161,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "gpt2_medium",
           label: "GPT2 (medium)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/gpt2-medium",
           generation: %{
             model_repo_id: "gpt2-medium",
@@ -172,7 +172,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "gpt2_large",
           label: "GPT2 (large)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/gpt2-large",
           generation: %{
             model_repo_id: "gpt2-large",
@@ -183,7 +183,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "gpt2_xl",
           label: "GPT2 (xl)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/gpt2-xl",
           generation: %{
             model_repo_id: "gpt2-xl",
@@ -194,7 +194,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "distilgpt2",
           label: "DistilGPT2 (base)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/distilgpt2",
           generation: %{
             model_repo_id: "distilgpt2",
@@ -205,7 +205,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "bart_xsum_summarization",
           label: "BART (XSum) - summarization",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/sshleifer/distilbart-xsum-12-3",
           generation: %{
             model_repo_id: "sshleifer/distilbart-xsum-12-3",
@@ -217,7 +217,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "bart_cnn_summarization",
           label: "BART (CNN) - summarization",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/sshleifer/distilbart-cnn-12-6",
           generation: %{
             model_repo_id: "sshleifer/distilbart-cnn-12-6",
@@ -240,7 +240,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "stable_diffusion_v1_4",
           label: "Stable Diffusion (v1.4)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/CompVis/stable-diffusion-v1-4",
           generation: %{
             repo_id: "CompVis/stable-diffusion-v1-4",
@@ -250,7 +250,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "stable_diffusion_anime",
           label: "Stable Diffusion (anime)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/Linaqruf/anything-v3.0",
           generation: %{
             repo_id: "Linaqruf/anything-v3.0",
@@ -261,7 +261,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "stable_diffusion_ghibli",
           label: "Stable Diffusion (Ghibli style)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/nitrosocke/Ghibli-Diffusion",
           generation: %{
             repo_id: "nitrosocke/Ghibli-Diffusion",
@@ -271,7 +271,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "stable_diffusion_modern_disney",
           label: "Stable Diffusion (modern Disney style)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/nitrosocke/mo-di-diffusion",
           generation: %{
             repo_id: "nitrosocke/mo-di-diffusion",
@@ -281,7 +281,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "stable_diffusion_classic_disney",
           label: "Stable Diffusion (classic Disney style)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/nitrosocke/classic-anim-diffusion",
           generation: %{
             repo_id: "nitrosocke/classic-anim-diffusion",
@@ -291,7 +291,7 @@ defmodule KinoBumblebee.TaskCell do
         %{
           id: "stable_diffusion_classic_redshift",
           label: "Stable Diffusion (redshift style)",
-          docs_logo: "huggingface_logo-noborder.svg",
+          docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/nitrosocke/redshift-diffusion",
           generation: %{
             repo_id: "nitrosocke/redshift-diffusion",

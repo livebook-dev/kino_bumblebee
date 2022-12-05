@@ -10,7 +10,19 @@ Mix.install([
 
 ### Kino.Bumblebee.ScoredList
 
-TODO
+This kino visualizes predictions from a classification model.
+
+```elixir
+predictions = [
+  {"france", 0.9279842972755432},
+  {"brittany", 0.008412551134824753},
+  {"algeria", 0.007433671969920397},
+  {"department", 0.004957548808306456},
+  {"reunion", 0.004369721747934818}
+]
+
+Kino.Bumblebee.ScoredList.new(predictions)
+```
 
 ## Smart cells
 
