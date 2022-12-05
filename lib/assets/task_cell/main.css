@@ -12,9 +12,13 @@
   --gray-600: #445668;
   --gray-700: #304254;
   --gray-800: #1c2a3a;
+  --gray-900: #0d1829;
 
   --blue-100: #ecf0ff;
   --blue-600: #3e64ff;
+
+  --yellow-100: #fff7ec;
+  --yellow-600: #ffa83f;
 }
 
 input,
@@ -22,6 +26,12 @@ select,
 textarea,
 button {
   font-family: inherit;
+}
+
+p,
+pre,
+h3 {
+  margin: 0;
 }
 
 .container {
@@ -174,7 +184,7 @@ a.icon-button img {
   line-height: 1;
 }
 
-.help-box {
+.help-section {
   padding: 16px;
   font-size: 0.875rem;
   line-height: 1.5em;
@@ -182,47 +192,36 @@ a.icon-button img {
   border-bottom: solid 1px var(--gray-200);
 }
 
-.help-box .section:not(:first-child) {
+.help-section > *:not(:first-child) {
   margin-top: 20px;
 }
 
-.help-box p {
-  margin: 0;
-  padding: 0;
-}
-
-.help-box h3 {
-  margin: 0;
+.help-section h3 {
   margin-bottom: 8px;
   font-size: 1.125em;
 }
 
-.info-box {
+.box {
   margin-bottom: 24px;
   padding: 16px;
   border-radius: 0.5rem;
-  font-weight: 500;
   font-size: 0.875rem;
-  background-color: var(--gray-100);
-  color: var(--gray-500);
+  color: var(--gray-700);
+  border: solid 1px var(--gray-300);
 }
 
-.info-box p {
-  margin: 0;
-  padding: 1rem 0 0.3rem;
+.box > *:not(:first-child) {
+  margin-top: 1rem;
 }
 
-.info-box p:first-child {
-  padding-top: 0;
-}
-
-.info-box pre {
-  margin: 1rem 0;
-}
-
-.info-box pre code {
-  padding-left: 2rem;
+.box pre code {
   font-family: "JetBrains Mono", monospace;
   font-size: 14px;
-  color: var(--gray-600);
+  color: var(--gray-900);
+}
+
+.box.box-warning {
+  color: var(--gray-900);
+  background-color: var(--yellow-100);
+  border-color: var(--yellow-600);
 }
