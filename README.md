@@ -22,19 +22,19 @@ After installing this package in Livebook you can interactively experiment
 with a number of Machine-Learning tasks, using different pre-trained models.
 A couple examples of what's possible:
 
-**Text-to-image**
+### Text-to-image
 
 ![](.github/images/text_to_image.png)
 
-**Image classification**
+### Image classification
 
 ![](.github/images/image_classification.png)
 
-**Text classification**
+### Text classification
 
 ![](.github/images/text_classification.png)
 
-**Text generation**
+### Text generation
 
 ![](.github/images/text_generation.png)
 
