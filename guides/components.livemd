@@ -16,4 +16,4 @@ TODO
 
 The following Smart cells are available:
 
-* **Machine-Learning task cell** - for interactively trying various models
+* **Neural Network task cell** - for interactively trying various tasks and models
