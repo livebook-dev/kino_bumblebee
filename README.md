@@ -16,6 +16,28 @@ Mix.install([
 ])
 ```
 
+## Examples
+
+After installing this package in Livebook you can interactively experiment
+with a number of Machine-Learning tasks, using different pre-trained models.
+A couple examples of what's possible:
+
+**Text-to-image**
+
+![](.github/images/text_to_image.png)
+
+**Image classification**
+
+![](.github/images/image_classification.png)
+
+**Text classification**
+
+![](.github/images/text_classification.png)
+
+**Text generation**
+
+![](.github/images/text_generation.png)
+
 ## License
 
 Copyright (C) 2022 Dashbit
