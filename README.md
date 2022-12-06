@@ -3,8 +3,10 @@
 [![Docs](https://img.shields.io/badge/hex.pm-docs-8e7ce6.svg)](https://hexdocs.pm/kino_bumblebee)
 [![Actions Status](https://github.com/livebook-dev/kino_bumblebee/workflows/Test/badge.svg)](https://github.com/livebook-dev/kino_bumblebee/actions)
 
-[Bumblebee](https://github.com/elixir-nx/bumblebee) integration with
-[Kino](https://github.com/livebook-dev/kino) for [Livebook](https://github.com/livebook-dev/livebook).
+[Bumblebee](https://github.com/elixir-nx/bumblebee) integration for [Livebook](https://livebook.dev).
+
+This ships by default as part of Livebook v0.8.0. Simply [install Livebook](https://livebook.dev/#install),
+open up a new notebook, and choose the "Neural Networks task" under the "+ Smart" cell prompt.
 
 ## Installation
 
