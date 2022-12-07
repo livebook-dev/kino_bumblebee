@@ -102,8 +102,7 @@ defmodule KinoBumblebee.TaskCellTest do
 
     spawn_link(fn ->
       Nx.default_backend(EXLA.Backend)
-      # TODO: Use Code.env_for_eval on Elixir v1.14+
-      TaskCell.scan_binding(kino.pid, [], :elixir.env_for_eval([]))
+      TaskCell.scan_binding(kino.pid, [], Code.env_for_eval([]))
     end)
 
     assert_broadcast_event(kino, "default_backend_updated", %{

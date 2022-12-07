@@ -701,7 +701,7 @@ defmodule KinoBumblebee.TaskCell do
 
   defp missing_dep(%{"compiler" => "exla"}) do
     unless Code.ensure_loaded?(EXLA) do
-      ~s/{:exla, "~> 0.4.0"}/
+      ~s/{:exla, "~> 0.4.1"}/
     end
   end
 

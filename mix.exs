@@ -10,7 +10,7 @@ defmodule KinoBumblebee.MixProject do
       version: @version,
       description: @description,
       name: "KinoBumblebee",
-      elixir: "~> 1.13",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
@@ -26,9 +26,9 @@ defmodule KinoBumblebee.MixProject do
 
   defp deps do
     [
-      # TODO: add dependency on bumblebee once public
-      {:kino, github: "livebook-dev/kino"},
-      {:nx, github: "elixir-nx/nx", sparse: "nx"},
+      {:bumblebee, "~> 0.1.0"},
+      {:kino, "~> 0.8"},
+      {:nx, "~> 0.4.1"},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
     ]
   end
