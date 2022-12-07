@@ -201,6 +201,16 @@ a.icon-button img {
   font-size: 1.125em;
 }
 
+.help-section a {
+  color: var(--gray-900);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.help-section a:hover {
+  text-decoration: none;
+}
+
 .box {
   margin-bottom: 24px;
   padding: 16px;
