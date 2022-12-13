@@ -144,6 +144,93 @@ defmodule KinoBumblebee.TaskCell do
       ]
     },
     %{
+      id: "fill_mask",
+      label: "Fill-mask",
+      variants: [
+        %{
+          id: "bert_base_uncased",
+          label: "BERT (base uncased)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/bert-base-uncased",
+          generation: %{
+            model_repo_id: "bert-base-uncased",
+            tokenizer_repo_id: "bert-base-uncased",
+            default_text: "Paris is the [MASK] of France."
+          }
+        },
+        %{
+          id: "bert_base_cased",
+          label: "BERT (base cased)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/bert-base-cased",
+          generation: %{
+            model_repo_id: "bert-base-cased",
+            tokenizer_repo_id: "bert-base-cased",
+            default_text: "Paris is the [MASK] of France."
+          }
+        },
+        %{
+          id: "bert_base_multilingual_uncased",
+          label: "BERT (base multilingual uncased)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/bert-base-multilingual-uncased",
+          generation: %{
+            model_repo_id: "bert-base-multilingual-uncased",
+            tokenizer_repo_id: "bert-base-multilingual-uncased",
+            default_text: "Paris est la [MASK] de la France."
+          }
+        },
+        %{
+          id: "bert_base_multilingual_cased",
+          label: "BERT (base multilingual cased)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/bert-base-multilingual-cased",
+          generation: %{
+            model_repo_id: "bert-base-multilingual-cased",
+            tokenizer_repo_id: "bert-base-multilingual-cased",
+            default_text: "Paris est la [MASK] de la France."
+          }
+        },
+        %{
+          id: "roberta_base",
+          label: "RoBERTa (base)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/roberta-base",
+          generation: %{
+            model_repo_id: "roberta-base",
+            tokenizer_repo_id: "roberta-base",
+            default_text: "Elixir is a [MASK] programming language."
+          }
+        },
+        %{
+          id: "distilroberta_base",
+          label: "DistilRoBERTa (base)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/distilroberta-base",
+          generation: %{
+            model_repo_id: "distilroberta-base",
+            tokenizer_repo_id: "distilroberta-base",
+            default_text: "Elixir is a [MASK] programming language."
+          }
+        },
+        %{
+          id: "albert_base_v2",
+          label: "ALBERT (base v2)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/albert-base-v2",
+          generation: %{
+            model_repo_id: "albert-base-v2",
+            tokenizer_repo_id: "albert-base-v2",
+            default_text: "Paris is the [MASK] of France."
+          }
+        }
+      ],
+      params: [
+        %{field: "top_k", label: "Top-k", type: :number, default: nil},
+        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+      ]
+    },
+    %{
       id: "text_generation",
       label: "Text generation",
       variants: [
@@ -537,6 +624,57 @@ defmodule KinoBumblebee.TaskCell do
           |> Enum.map(&{&1.label, &1.score})
           |> Kino.Bumblebee.ScoredList.new()
           |> then(&Kino.Frame.render(frame, &1))
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(%{"task_id" => "fill_mask"} = attrs) do
+    opts =
+      if(top_k = attrs["top_k"],
+        do: [top_k: top_k],
+        else: []
+      ) ++
+        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        serving = Bumblebee.Text.fill_mask(model_info, tokenizer, unquote(opts))
+      end,
+      quote do
+        text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
+        form = Kino.Control.form([text: text_input], submit: "Run")
+        frame = Kino.Frame.new()
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(fn %{data: %{text: text}} ->
+          one_mask? = match?([_, _], String.split(text, "[MASK]"))
+
+          if one_mask? do
+            Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+            output = Nx.Serving.run(serving, text)
+
+            output.predictions
+            |> Enum.map(&{&1.token, &1.score})
+            |> Kino.Bumblebee.ScoredList.new()
+            |> then(&Kino.Frame.render(frame, &1))
+          else
+            Kino.Frame.render(
+              frame,
+              Kino.Markdown.new("The text must include exactly one [MASK].")
+            )
+          end
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
