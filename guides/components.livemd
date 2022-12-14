@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:kino_bumblebee, "~> 0.1.0"}
+  {:kino_bumblebee, "~> 0.1.1"}
 ])
 ```
 
@@ -22,6 +22,23 @@ predictions = [
 ]
 
 Kino.Bumblebee.ScoredList.new(predictions)
+```
+
+### Kino.Bumblebee.HighlightedText
+
+This kino visualizes predictions from a classification model.
+
+```elixir
+text = "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends."
+
+highlights = [
+  %{label: "PER", phrase: "Rachel Green", start: 0, end: 12},
+  %{label: "ORG", phrase: "Ralph Lauren", start: 22, end: 34},
+  %{label: "LOC", phrase: "New York City", start: 38, end: 51},
+  %{label: "MISC", phrase: "Friends", start: 66, end: 73}
+]
+
+Kino.Bumblebee.HighlightedText.new(text, highlights)
 ```
 
 ## Smart cells
