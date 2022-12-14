@@ -144,6 +144,58 @@ defmodule KinoBumblebee.TaskCell do
       ]
     },
     %{
+      id: "token_classification",
+      label: "Token classification",
+      variants: [
+        %{
+          id: "bert_base_cased_ner",
+          label: "BERT (base cased) - named-entity recognition",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/dslim/bert-base-NER",
+          generation: %{
+            model_repo_id: "dslim/bert-base-NER",
+            tokenizer_repo_id: "bert-base-cased",
+            default_text:
+              "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends."
+          }
+        },
+        %{
+          id: "bert_base_uncased_pos",
+          label: "BERT (base uncased) - part of speech",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/vblagoje/bert-english-uncased-finetuned-pos",
+          generation: %{
+            model_repo_id: "vblagoje/bert-english-uncased-finetuned-pos",
+            tokenizer_repo_id: "bert-base-uncased",
+            default_text:
+              "Elixir is a dynamic, functional language for building scalable and maintainable applications."
+          }
+        },
+        %{
+          id: "roberta_base_upos",
+          label: "RobBERTa (base) - universal part of speech",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/KoichiYasuoka/roberta-base-english-upos",
+          generation: %{
+            model_repo_id: "KoichiYasuoka/roberta-base-english-upos",
+            tokenizer_repo_id: "roberta-base",
+            default_text:
+              "Elixir is a dynamic, functional language for building scalable and maintainable applications."
+          }
+        }
+      ],
+      params: [
+        %{
+          field: "aggregation",
+          label: "Aggregation",
+          type: :select,
+          options: [%{value: nil, label: "None"}, %{value: :same, label: "Same"}],
+          default: :same
+        },
+        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+      ]
+    },
+    %{
       id: "fill_mask",
       label: "Fill-mask",
       variants: [
@@ -482,15 +534,12 @@ defmodule KinoBumblebee.TaskCell do
   def handle_event("update_field", %{"field" => field, "value" => value}, ctx) do
     current_task_id = ctx.assigns.fields["task_id"]
 
-    type =
+    param =
       Enum.find_value(tasks(), fn task ->
-        task.id == current_task_id &&
-          Enum.find_value(task.params, fn param ->
-            param.field == field && param.type
-          end)
+        task.id == current_task_id && Enum.find(task.params, &(&1.field == field))
       end)
 
-    updated_fields = to_updates(field, value, type)
+    updated_fields = to_updates(field, value, param)
     ctx = update(ctx, :fields, &Map.merge(&1, updated_fields))
 
     broadcast_event(ctx, "update", %{"fields" => updated_fields})
@@ -508,11 +557,18 @@ defmodule KinoBumblebee.TaskCell do
     {:noreply, ctx}
   end
 
-  defp to_updates(field, value, type), do: %{field => parse_value(value, type)}
+  defp to_updates(field, value, param), do: %{field => parse_value(value, param)}
 
-  defp parse_value("", _type), do: nil
+  defp parse_value("", _param), do: nil
   defp parse_value(value, :number), do: String.to_integer(value)
-  defp parse_value(value, _type), do: value
+
+  defp parse_value(value, %{type: :select, options: options}) do
+    Enum.find_value(options, fn option ->
+      to_string(option.value) == value && option.value
+    end)
+  end
+
+  defp parse_value(value, _param), do: value
 
   @impl true
   def scan_binding(pid, _binding, _env) do
@@ -624,6 +680,45 @@ defmodule KinoBumblebee.TaskCell do
           |> Enum.map(&{&1.label, &1.score})
           |> Kino.Bumblebee.ScoredList.new()
           |> then(&Kino.Frame.render(frame, &1))
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(%{"task_id" => "token_classification"} = attrs) do
+    opts =
+      if(aggregation = attrs["aggregation"],
+        do: [aggregation: aggregation],
+        else: []
+      ) ++
+        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        serving = Bumblebee.Text.token_classification(model_info, tokenizer, unquote(opts))
+      end,
+      quote do
+        text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
+        form = Kino.Control.form([text: text_input], submit: "Run")
+
+        frame = Kino.Frame.new()
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          output = Nx.Serving.run(serving, text)
+          Kino.Frame.render(frame, Kino.Bumblebee.HighlightedText.new(text, output.entities))
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)

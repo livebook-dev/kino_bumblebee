@@ -36,6 +36,10 @@ A couple examples of what's possible:
 
 ![](.github/images/text_classification.png)
 
+### Token classification
+
+![](.github/images/token_classification.png)
+
 ### Fill-mask
 
 ![](.github/images/fill_mask.png)
