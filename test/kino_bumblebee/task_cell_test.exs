@@ -91,6 +91,18 @@ defmodule KinoBumblebee.TaskCellTest do
 
                Kino.Layout.grid([form, frame], boxed: true, gap: 16)\
                """
+
+      attrs = %{
+        "task_id" => "token_classification",
+        "variant_id" => "bert_base_cased_ner",
+        "aggregation" => "same",
+        "sequence_length" => 100,
+        "compiler" => "exla"
+      }
+
+      {_kino, source} = start_smart_cell!(TaskCell, attrs)
+
+      assert source =~ "aggregation: :same"
     end
   end
 

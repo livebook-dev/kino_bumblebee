@@ -189,7 +189,7 @@ defmodule KinoBumblebee.TaskCell do
           field: "aggregation",
           label: "Aggregation",
           type: :select,
-          options: [%{value: nil, label: "None"}, %{value: :same, label: "Same"}],
+          options: [%{value: nil, label: "None"}, %{value: "same", label: "Same"}],
           default: :same
         },
         %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
@@ -690,7 +690,7 @@ defmodule KinoBumblebee.TaskCell do
   defp to_quoted(%{"task_id" => "token_classification"} = attrs) do
     opts =
       if(aggregation = attrs["aggregation"],
-        do: [aggregation: aggregation],
+        do: [aggregation: String.to_atom(aggregation)],
         else: []
       ) ++
         [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
