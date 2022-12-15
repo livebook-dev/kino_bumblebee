@@ -190,7 +190,7 @@ defmodule KinoBumblebee.TaskCell do
           label: "Aggregation",
           type: :select,
           options: [%{value: nil, label: "None"}, %{value: "same", label: "Same"}],
-          default: :same
+          default: "same"
         },
         %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
       ]
@@ -560,7 +560,7 @@ defmodule KinoBumblebee.TaskCell do
   defp to_updates(field, value, param), do: %{field => parse_value(value, param)}
 
   defp parse_value("", _param), do: nil
-  defp parse_value(value, :number), do: String.to_integer(value)
+  defp parse_value(value, %{type: :number}), do: String.to_integer(value)
 
   defp parse_value(value, %{type: :select, options: options}) do
     Enum.find_value(options, fn option ->

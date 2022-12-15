@@ -137,4 +137,15 @@ defmodule KinoBumblebee.TaskCellTest do
       }
     })
   end
+
+  test "updates source on field update" do
+    {kino, _source} = start_smart_cell!(TaskCell, %{})
+
+    push_event(kino, "update_field", %{"field" => "top_k", "value" => "2"})
+
+    assert_broadcast_event(kino, "update", %{"fields" => %{"top_k" => 2}})
+
+    assert_smart_cell_update(kino, %{"top_k" => 2}, source)
+    assert source =~ "top_k: 2"
+  end
 end
