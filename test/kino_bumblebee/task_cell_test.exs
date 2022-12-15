@@ -91,6 +91,49 @@ defmodule KinoBumblebee.TaskCellTest do
 
                Kino.Layout.grid([form, frame], boxed: true, gap: 16)\
                """
+
+      attrs = %{
+        "task_id" => "token_classification",
+        "variant_id" => "bert_base_cased_ner",
+        "aggregation" => "same",
+        "sequence_length" => 100,
+        "compiler" => "exla"
+      }
+
+      {_kino, source} = start_smart_cell!(TaskCell, attrs)
+
+      assert source ==
+               """
+               {:ok, model_info} =
+                 Bumblebee.load_model({:hf, "dslim/bert-base-NER"}, log_params_diff: false)
+
+               {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "bert-base-cased"})
+
+               serving =
+                 Bumblebee.Text.token_classification(model_info, tokenizer,
+                   aggregation: :same,
+                   compile: [batch_size: 1, sequence_length: 100],
+                   defn_options: [compiler: EXLA]
+                 )
+
+               text_input =
+                 Kino.Input.textarea("Text",
+                   default: "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends."
+                 )
+
+               form = Kino.Control.form([text: text_input], submit: "Run")
+               frame = Kino.Frame.new()
+
+               form
+               |> Kino.Control.stream()
+               |> Kino.listen(fn %{data: %{text: text}} ->
+                 Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+                 output = Nx.Serving.run(serving, text)
+                 Kino.Frame.render(frame, Kino.Bumblebee.HighlightedText.new(text, output.entities))
+               end)
+
+               Kino.Layout.grid([form, frame], boxed: true, gap: 16)\
+               """
     end
   end
 
