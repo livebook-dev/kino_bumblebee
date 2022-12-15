@@ -14,7 +14,7 @@ To bring KinoBumblebee to Livebook all you need to do is `Mix.install/2`:
 
 ```elixir
 Mix.install([
-  {:kino_bumblebee, "~> 0.1.2"}
+  {:kino_bumblebee, "~> 0.1.3"}
 ])
 ```
 

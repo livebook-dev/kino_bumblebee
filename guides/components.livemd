@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:kino_bumblebee, "~> 0.1.2"}
+  {:kino_bumblebee, "~> 0.1.3"}
 ])
 ```
 

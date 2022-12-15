@@ -1,7 +1,7 @@
 defmodule KinoBumblebee.MixProject do
   use Mix.Project
 
-  @version "0.1.2"
+  @version "0.1.3"
   @description "Bumblebee integration with Livebook"
 
   def project do
