@@ -26,7 +26,7 @@ defmodule KinoBumblebee.MixProject do
 
   defp deps do
     [
-      {:bumblebee, "~> 0.1.2"},
+      {:bumblebee, github: "elixir-nx/bumblebee"},
       {:kino, "~> 0.8"},
       {:nx, "~> 0.4.1"},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}

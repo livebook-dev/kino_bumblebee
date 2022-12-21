@@ -126,6 +126,17 @@ defmodule KinoBumblebee.TaskCell do
           }
         },
         %{
+          id: "xlm_roberta_language_detection",
+          label: "XLM-RoBERTa - language detection",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/papluca/xlm-roberta-base-language-detection",
+          generation: %{
+            model_repo_id: "papluca/xlm-roberta-base-language-detection",
+            tokenizer_repo_id: "papluca/xlm-roberta-base-language-detection",
+            default_text: "La casa de papel"
+          }
+        },
+        %{
           id: "bert_finbert_sentiment",
           label: "BERT (FinBERT) - finance sentiment",
           docs_logo: "huggingface_logo.svg",
@@ -181,6 +192,19 @@ defmodule KinoBumblebee.TaskCell do
             tokenizer_repo_id: "roberta-base",
             default_text:
               "Elixir is a dynamic, functional language for building scalable and maintainable applications."
+          }
+        },
+        %{
+          id: "xlm_roberta_base_punctuation",
+          label: "RobBERTa (base) - punctuation",
+          docs_logo: "huggingface_logo.svg",
+          docs_url:
+            "https://huggingface.co/oliverguhr/fullstop-punctuation-multilingual-sonar-base",
+          generation: %{
+            model_repo_id: "oliverguhr/fullstop-punctuation-multilingual-sonar-base",
+            tokenizer_repo_id: "oliverguhr/fullstop-punctuation-multilingual-sonar-base",
+            default_text:
+              "Elixir is a functional concurrent general-purpose programming language that runs on the BEAM virtual machine which is also used to implement the Erlang programming language"
           }
         }
       ],
@@ -262,6 +286,17 @@ defmodule KinoBumblebee.TaskCell do
           generation: %{
             model_repo_id: "distilroberta-base",
             tokenizer_repo_id: "distilroberta-base",
+            default_text: "Elixir is a [MASK] programming language."
+          }
+        },
+        %{
+          id: "xlm_roberta_base",
+          label: "XLM-RoBERTa (base)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/xlm-roberta-base",
+          generation: %{
+            model_repo_id: "xlm-roberta-base",
+            tokenizer_repo_id: "xlm-roberta-base",
             default_text: "Elixir is a [MASK] programming language."
           }
         },
