@@ -28,7 +28,7 @@ defmodule KinoBumblebee.MixProject do
     [
       {:bumblebee, github: "elixir-nx/bumblebee"},
       {:kino, "~> 0.8"},
-      {:nx, "~> 0.4.1"},
+      {:nx, github: "elixir-nx/nx", sparse: "nx", override: true},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
     ]
   end
