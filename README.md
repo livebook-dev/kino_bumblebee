@@ -40,6 +40,10 @@ A couple examples of what's possible:
 
 ![](.github/images/token_classification.png)
 
+### Zero-shot text classification
+
+![](.github/images/zero_shot_text_classification.png)
+
 ### Fill-mask
 
 ![](.github/images/fill_mask.png)

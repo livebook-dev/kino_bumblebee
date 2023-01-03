@@ -220,6 +220,44 @@ defmodule KinoBumblebee.TaskCell do
       ]
     },
     %{
+      id: "zero_shot_text_classification",
+      label: "Zero-shot text classification",
+      variants: [
+        %{
+          id: "bart_large_mnli",
+          label: "BART (large MNLI)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/facebook/bart-large-mnli",
+          generation: %{
+            model_repo_id: "facebook/bart-large-mnli",
+            tokenizer_repo_id: "facebook/bart-large-mnli",
+            default_text: "One day I will see the world."
+          }
+        },
+        %{
+          id: "xlm_roberta_large_xnli",
+          label: "XLM-RoBERTa (large XNLI) - multilingual",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/joeddav/xlm-roberta-large-xnli",
+          generation: %{
+            model_repo_id: "joeddav/xlm-roberta-large-xnli",
+            tokenizer_repo_id: "xlm-roberta-large",
+            default_text: "Un jour je verrai le monde."
+          }
+        }
+      ],
+      params: [
+        %{
+          field: "labels",
+          label: "Labels (comma-separated)",
+          type: :text,
+          default: "cooking, traveling, dancing"
+        },
+        %{field: "top_k", label: "Top-k", type: :number, default: nil},
+        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+      ]
+    },
+    %{
       id: "fill_mask",
       label: "Fill-mask",
       variants: [
@@ -594,6 +632,7 @@ defmodule KinoBumblebee.TaskCell do
 
   defp to_updates(field, value, param), do: %{field => parse_value(value, param)}
 
+  defp parse_value(text, %{type: :text}), do: text
   defp parse_value("", _param), do: nil
   defp parse_value(value, %{type: :number}), do: String.to_integer(value)
 
@@ -754,6 +793,59 @@ defmodule KinoBumblebee.TaskCell do
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
           output = Nx.Serving.run(serving, text)
           Kino.Frame.render(frame, Kino.Bumblebee.HighlightedText.new(text, output.entities))
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(%{"task_id" => "zero_shot_text_classification"} = attrs) do
+    opts =
+      if(top_k = attrs["top_k"],
+        do: [top_k: top_k],
+        else: []
+      ) ++
+        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    labels =
+      for label <- String.split(attrs["labels"], ","),
+          label = String.trim(label),
+          label != "",
+          do: label
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        labels = unquote(labels)
+
+        serving =
+          Bumblebee.Text.zero_shot_classification(model_info, tokenizer, labels, unquote(opts))
+      end,
+      quote do
+        text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
+        form = Kino.Control.form([text: text_input], submit: "Run")
+
+        frame = Kino.Frame.new()
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+
+          output = Nx.Serving.run(serving, text)
+
+          output.predictions
+          |> Enum.map(&{&1.label, &1.score})
+          |> Kino.Bumblebee.ScoredList.new()
+          |> then(&Kino.Frame.render(frame, &1))
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
