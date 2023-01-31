@@ -52,6 +52,10 @@ A couple examples of what's possible:
 
 ![](.github/images/text_generation.png)
 
+### Speech-to-text
+
+![](.github/images/speech_to_text.png)
+
 ## License
 
 Copyright (C) 2022 Dashbit

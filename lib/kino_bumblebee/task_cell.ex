@@ -446,6 +446,70 @@ defmodule KinoBumblebee.TaskCell do
       ]
     },
     %{
+      id: "speech_to_text",
+      label: "Speech-to-text",
+      variants: [
+        %{
+          id: "whisper_tiny",
+          label: "whisper (tiny multilingual)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/openai/whisper-tiny",
+          generation: %{
+            model_repo_id: "openai/whisper-tiny",
+            featurizer_repo_id: "openai/whisper-tiny",
+            tokenizer_repo_id: "openai/whisper-tiny"
+          }
+        },
+        %{
+          id: "whisper_base",
+          label: "whisper (base multilingual)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/openai/whisper-base",
+          generation: %{
+            model_repo_id: "openai/whisper-base",
+            featurizer_repo_id: "openai/whisper-base",
+            tokenizer_repo_id: "openai/whisper-base"
+          }
+        },
+        %{
+          id: "whisper_small",
+          label: "whisper (small multilingual)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/openai/whisper-small",
+          generation: %{
+            model_repo_id: "openai/whisper-small",
+            featurizer_repo_id: "openai/whisper-small",
+            tokenizer_repo_id: "openai/whisper-small"
+          }
+        },
+        %{
+          id: "whisper_medium",
+          label: "whisper (medium multilingual)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/openai/whisper-medium",
+          generation: %{
+            model_repo_id: "openai/whisper-medium",
+            featurizer_repo_id: "openai/whisper-medium",
+            tokenizer_repo_id: "openai/whisper-medium"
+          }
+        },
+        %{
+          id: "whisper_large",
+          label: "whisper (large multilingual)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/openai/whisper-large",
+          generation: %{
+            model_repo_id: "openai/whisper-large",
+            featurizer_repo_id: "openai/whisper-large",
+            tokenizer_repo_id: "openai/whisper-large"
+          }
+        }
+      ],
+      params: [
+        %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
+      ]
+    },
+    %{
       id: "text_to_image",
       label: "Text-to-image",
       variants: [
@@ -935,6 +999,52 @@ defmodule KinoBumblebee.TaskCell do
         |> Kino.listen(fn %{data: %{text: text}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
           %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
+          Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(%{"task_id" => "speech_to_text"} = attrs) do
+    opts =
+      drop_nil_options(max_new_tokens: attrs["max_new_tokens"]) ++
+        [compile: [batch_size: 1]] ++
+        maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, featurizer} =
+          Bumblebee.load_featurizer({:hf, unquote(generation.featurizer_repo_id)})
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        serving = Bumblebee.Audio.speech_to_text(model_info, featurizer, tokenizer, unquote(opts))
+      end,
+      quote do
+        audio_input = Kino.Input.audio("Audio", sampling_rate: featurizer.sampling_rate)
+        form = Kino.Control.form([audio: audio_input], submit: "Run")
+
+        frame = Kino.Frame.new()
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(fn %{data: %{audio: audio}} ->
+          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+
+          audio =
+            audio.data
+            |> Nx.from_binary(:f32)
+            |> Nx.reshape({:auto, audio.num_channels})
+            |> Nx.mean(axes: [1])
+
+          %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
           Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
         end)
 
