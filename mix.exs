@@ -1,7 +1,7 @@
 defmodule KinoBumblebee.MixProject do
   use Mix.Project
 
-  @version "0.1.4"
+  @version "0.2.0"
   @description "Bumblebee integration with Livebook"
 
   def project do
@@ -26,9 +26,10 @@ defmodule KinoBumblebee.MixProject do
 
   defp deps do
     [
-      {:bumblebee, github: "elixir-nx/bumblebee"},
+      {:bumblebee, "~> 0.2.0"},
       {:kino, "~> 0.8"},
-      {:nx, github: "elixir-nx/nx", sparse: "nx", override: true},
+      {:nx, "~> 0.5.0"},
+      {:exla, "~> 0.5.0", only: [:dev, :test]},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
     ]
   end
