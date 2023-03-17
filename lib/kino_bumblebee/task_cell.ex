@@ -451,7 +451,7 @@ defmodule KinoBumblebee.TaskCell do
       variants: [
         %{
           id: "whisper_tiny",
-          label: "whisper (tiny multilingual)",
+          label: "Whisper (tiny multilingual)",
           docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/openai/whisper-tiny",
           generation: %{
@@ -462,7 +462,7 @@ defmodule KinoBumblebee.TaskCell do
         },
         %{
           id: "whisper_base",
-          label: "whisper (base multilingual)",
+          label: "Whisper (base multilingual)",
           docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/openai/whisper-base",
           generation: %{
@@ -473,7 +473,7 @@ defmodule KinoBumblebee.TaskCell do
         },
         %{
           id: "whisper_small",
-          label: "whisper (small multilingual)",
+          label: "Whisper (small multilingual)",
           docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/openai/whisper-small",
           generation: %{
@@ -484,7 +484,7 @@ defmodule KinoBumblebee.TaskCell do
         },
         %{
           id: "whisper_medium",
-          label: "whisper (medium multilingual)",
+          label: "Whisper (medium multilingual)",
           docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/openai/whisper-medium",
           generation: %{
@@ -495,7 +495,7 @@ defmodule KinoBumblebee.TaskCell do
         },
         %{
           id: "whisper_large",
-          label: "whisper (large multilingual)",
+          label: "Whisper (large multilingual)",
           docs_logo: "huggingface_logo.svg",
           docs_url: "https://huggingface.co/openai/whisper-large",
           generation: %{
@@ -506,6 +506,47 @@ defmodule KinoBumblebee.TaskCell do
         }
       ],
       params: [
+        %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
+      ]
+    },
+    %{
+      id: "conversation",
+      label: "Conversational",
+      variants: [
+        %{
+          id: "dialogpt_small",
+          label: "DialoGPT (small)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/microsoft/DialoGPT-small",
+          generation: %{
+            model_repo_id: "microsoft/DialoGPT-small",
+            tokenizer_repo_id: "gpt2"
+          }
+        },
+        %{
+          id: "dialogpt_medium",
+          label: "DialoGPT (medium)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/microsoft/DialoGPT-medium",
+          generation: %{
+            model_repo_id: "microsoft/DialoGPT-medium",
+            tokenizer_repo_id: "gpt2"
+          }
+        },
+        %{
+          id: "dialogpt_large",
+          label: "DialoGPT (large)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/microsoft/DialoGPT-large",
+          generation: %{
+            model_repo_id: "microsoft/DialoGPT-large",
+            tokenizer_repo_id: "gpt2"
+          }
+        }
+      ],
+      params: [
+        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 1024},
+        %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
         %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
       ]
     },
@@ -1049,6 +1090,50 @@ defmodule KinoBumblebee.TaskCell do
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(%{"task_id" => "conversation"} = attrs) do
+    opts =
+      drop_nil_options(
+        min_new_tokens: attrs["min_new_tokens"],
+        max_new_tokens: attrs["max_new_tokens"]
+      ) ++
+        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        serving = Bumblebee.Text.conversation(model_info, tokenizer, unquote(opts))
+      end,
+      quote do
+        frame = Kino.Frame.new()
+
+        inputs = [message: Kino.Input.text("Message")]
+        form = Kino.Control.form(inputs, submit: "Send message", reset_on_submit: [:message])
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(nil, fn %{data: %{message: message}}, history ->
+          Kino.Frame.append(frame, Kino.Markdown.new("**Me:** #{message}"))
+
+          %{text: text, history: history} =
+            Nx.Serving.run(serving, %{text: message, history: history})
+
+          Kino.Frame.append(frame, Kino.Markdown.new("**Bot:** #{text}"))
+
+          {:cont, history}
+        end)
+
+        Kino.Layout.grid([frame, form], gap: 16)
       end
     ]
   end
