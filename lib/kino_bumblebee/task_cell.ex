@@ -356,6 +356,51 @@ defmodule KinoBumblebee.TaskCell do
       ]
     },
     %{
+      id: "question_answering",
+      label: "Question answering",
+      variants: [
+        %{
+          id: "distilbert_base_cased",
+          label: "DistilBERT (base cased)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+          generation: %{
+            model_repo_id: "distilbert-base-cased-distilled-squad",
+            tokenizer_repo_id: "distilbert-base-cased-distilled-squad",
+            default_question: "Where do I live?",
+            default_context: "My name is Sarah and I live in London."
+          }
+        },
+        %{
+          id: "bert_large_uncased",
+          label: "BERT (large uncased)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+          generation: %{
+            model_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
+            tokenizer_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
+            default_question: "What's my name?",
+            default_context: "My name is Clara and I live in Berkeley."
+          }
+        },
+        %{
+          id: "roberta_base",
+          label: "RoBERTa (base)",
+          docs_logo: "huggingface_logo.svg",
+          docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+          generation: %{
+            model_repo_id: "deepset/roberta-base-squad2",
+            tokenizer_repo_id: "roberta-base",
+            default_question: "Where do I live?",
+            default_context: "My name is Wolfgang and I live in Berlin"
+          }
+        }
+      ],
+      params: [
+        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 500}
+      ]
+    },
+    %{
       id: "text_generation",
       label: "Text generation",
       variants: [
@@ -511,7 +556,7 @@ defmodule KinoBumblebee.TaskCell do
     },
     %{
       id: "conversation",
-      label: "Conversational",
+      label: "Conversation",
       variants: [
         %{
           id: "dialogpt_small",
@@ -1009,6 +1054,48 @@ defmodule KinoBumblebee.TaskCell do
     ]
   end
 
+  defp to_quoted(%{"task_id" => "question_answering"} = attrs) do
+    opts =
+      [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        serving = Bumblebee.Text.question_answering(model_info, tokenizer, unquote(opts))
+      end,
+      quote do
+        inputs = [
+          question: Kino.Input.text("Question", default: unquote(generation.default_question)),
+          context: Kino.Input.textarea("Context", default: unquote(generation.default_context))
+        ]
+
+        form = Kino.Control.form(inputs, submit: "Run")
+
+        frame = Kino.Frame.new()
+
+        form
+        |> Kino.Control.stream()
+        |> Kino.listen(fn %{data: %{question: question, context: context}} ->
+          output = Nx.Serving.run(serving, %{question: question, context: context})
+
+          output.results
+          |> Enum.map(&{&1.text, &1.score})
+          |> Kino.Bumblebee.ScoredList.new()
+          |> then(&Kino.Frame.render(frame, &1))
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
   defp to_quoted(%{"task_id" => "text_generation"} = attrs) do
     opts =
       drop_nil_options(
@@ -1133,7 +1220,7 @@ defmodule KinoBumblebee.TaskCell do
           {:cont, history}
         end)
 
-        Kino.Layout.grid([frame, form], gap: 16)
+        Kino.Layout.grid([frame, form], boxed: true, gap: 16)
       end
     ]
   end
