@@ -48,6 +48,10 @@ A couple examples of what's possible:
 
 ![](.github/images/fill_mask.png)
 
+### Question answering
+
+![](.github/images/question_answering.png)
+
 ### Text generation
 
 ![](.github/images/text_generation.png)
@@ -55,6 +59,11 @@ A couple examples of what's possible:
 ### Speech-to-text
 
 ![](.github/images/speech_to_text.png)
+
+### Conversation
+
+![](.github/images/conversation.png)
+
 
 ## License
 
