@@ -874,19 +874,20 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Stream.filter(& &1.data.image)
-        |> Kino.listen(fn %{data: %{image: image}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{image: image}} ->
+          if image do
+            Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
-          image = image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
-          output = Nx.Serving.run(serving, image)
+            image =
+              image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
 
-          output.predictions
-          |> Enum.map(&{&1.label, &1.score})
-          |> Kino.Bumblebee.ScoredList.new()
-          |> then(&Kino.Frame.render(frame, &1))
+            output = Nx.Serving.run(serving, image)
+
+            output.predictions
+            |> Enum.map(&{&1.label, &1.score})
+            |> Kino.Bumblebee.ScoredList.new()
+            |> then(&Kino.Frame.render(frame, &1))
+          end
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -920,9 +921,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
@@ -964,9 +963,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
           output = Nx.Serving.run(serving, text)
           Kino.Frame.render(frame, Kino.Bumblebee.HighlightedText.new(text, output.entities))
@@ -1012,9 +1009,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
@@ -1055,9 +1050,7 @@ defmodule KinoBumblebee.TaskCell do
         form = Kino.Control.form([text: text_input], submit: "Run")
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           one_mask? = match?([_, _], String.split(text, "[MASK]"))
 
           if one_mask? do
@@ -1107,9 +1100,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{question: question, context: context}} ->
+        Kino.listen(form, fn %{data: %{question: question, context: context}} ->
           output = Nx.Serving.run(serving, %{question: question, context: context})
 
           output.results
@@ -1149,9 +1140,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
           %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
           Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
@@ -1188,9 +1177,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{audio: audio}} ->
+        Kino.listen(form, fn %{data: %{audio: audio}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
           audio =
@@ -1200,7 +1187,7 @@ defmodule KinoBumblebee.TaskCell do
             |> Nx.mean(axes: [1])
 
           %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
-          Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+          Kino.Frame.render(frame, Kino.Text.new(generated_text))
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -1234,9 +1221,7 @@ defmodule KinoBumblebee.TaskCell do
         inputs = [message: Kino.Input.text("Message")]
         form = Kino.Control.form(inputs, submit: "Send message", reset_on_submit: [:message])
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(nil, fn %{data: %{message: message}}, history ->
+        Kino.listen(form, nil, fn %{data: %{message: message}}, history ->
           Kino.Frame.append(frame, Kino.Markdown.new("**Me:** #{message}"))
 
           %{text: text, history: history} =
@@ -1316,9 +1301,7 @@ defmodule KinoBumblebee.TaskCell do
         form = Kino.Control.form([text: text_input], submit: "Run")
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
           output = Nx.Serving.run(serving, text)

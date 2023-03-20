@@ -25,18 +25,20 @@ defmodule KinoBumblebee.TaskCellTest do
                form = Kino.Control.form([image: image_input], submit: "Run")
                frame = Kino.Frame.new()
 
-               form
-               |> Kino.Control.stream()
-               |> Stream.filter(& &1.data.image)
-               |> Kino.listen(fn %{data: %{image: image}} ->
-                 Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
-                 image = image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
-                 output = Nx.Serving.run(serving, image)
+               Kino.listen(form, fn %{data: %{image: image}} ->
+                 if image do
+                   Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
 
-                 output.predictions
-                 |> Enum.map(&{&1.label, &1.score})
-                 |> Kino.Bumblebee.ScoredList.new()
-                 |> then(&Kino.Frame.render(frame, &1))
+                   image =
+                     image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
+
+                   output = Nx.Serving.run(serving, image)
+
+                   output.predictions
+                   |> Enum.map(&{&1.label, &1.score})
+                   |> Kino.Bumblebee.ScoredList.new()
+                   |> then(&Kino.Frame.render(frame, &1))
+                 end
                end)
 
                Kino.Layout.grid([form, frame], boxed: true, gap: 16)\
@@ -77,9 +79,7 @@ defmodule KinoBumblebee.TaskCellTest do
                form = Kino.Control.form([text: text_input], submit: "Run")
                frame = Kino.Frame.new()
 
-               form
-               |> Kino.Control.stream()
-               |> Kino.listen(fn %{data: %{text: text}} ->
+               Kino.listen(form, fn %{data: %{text: text}} ->
                  Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
                  output = Nx.Serving.run(serving, text)
 
