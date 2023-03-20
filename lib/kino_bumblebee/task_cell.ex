@@ -5,675 +5,702 @@ defmodule KinoBumblebee.TaskCell do
   use Kino.JS.Live
   use Kino.SmartCell, name: "Neural Network task"
 
-  @tasks [
+  @task_groups [
     %{
-      id: "image_classification",
-      label: "Image classification",
-      variants: [
+      label: "Vision",
+      tasks: [
         %{
-          id: "resnet",
-          label: "ResNet",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/microsoft/resnet-50",
-          generation: %{
-            model_repo_id: "microsoft/resnet-50",
-            featurizer_repo_id: "microsoft/resnet-50"
-          }
-        },
-        %{
-          id: "convnext",
-          label: "ConvNeXT",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/facebook/convnext-tiny-224",
-          generation: %{
-            model_repo_id: "facebook/convnext-tiny-224",
-            featurizer_repo_id: "facebook/convnext-tiny-224"
-          }
-        },
-        %{
-          id: "vit",
-          label: "ViT",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/google/vit-base-patch16-224",
-          generation: %{
-            model_repo_id: "google/vit-base-patch16-224",
-            featurizer_repo_id: "google/vit-base-patch16-224"
-          }
-        },
-        %{
-          id: "deit",
-          label: "DeiT",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/facebook/deit-base-distilled-patch16-224",
-          generation: %{
-            model_repo_id: "facebook/deit-base-distilled-patch16-224",
-            featurizer_repo_id: "facebook/deit-base-distilled-patch16-224"
-          }
+          id: "image_classification",
+          label: "Image classification",
+          variants: [
+            %{
+              id: "resnet",
+              label: "ResNet",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/microsoft/resnet-50",
+              generation: %{
+                model_repo_id: "microsoft/resnet-50",
+                featurizer_repo_id: "microsoft/resnet-50"
+              }
+            },
+            %{
+              id: "convnext",
+              label: "ConvNeXT",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/facebook/convnext-tiny-224",
+              generation: %{
+                model_repo_id: "facebook/convnext-tiny-224",
+                featurizer_repo_id: "facebook/convnext-tiny-224"
+              }
+            },
+            %{
+              id: "vit",
+              label: "ViT",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/google/vit-base-patch16-224",
+              generation: %{
+                model_repo_id: "google/vit-base-patch16-224",
+                featurizer_repo_id: "google/vit-base-patch16-224"
+              }
+            },
+            %{
+              id: "deit",
+              label: "DeiT",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/facebook/deit-base-distilled-patch16-224",
+              generation: %{
+                model_repo_id: "facebook/deit-base-distilled-patch16-224",
+                featurizer_repo_id: "facebook/deit-base-distilled-patch16-224"
+              }
+            }
+          ],
+          params: [
+            %{field: "top_k", label: "Top-k", type: :number, default: nil}
+          ]
         }
-      ],
-      params: [
-        %{field: "top_k", label: "Top-k", type: :number, default: nil}
       ]
     },
     %{
-      id: "text_classification",
-      label: "Text classification",
-      variants: [
+      label: "Text",
+      tasks: [
         %{
-          id: "roberta_bertweet_emotion",
-          label: "RoBERTa (BERTweet) - emotion",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/finiteautomata/bertweet-base-emotion-analysis",
-          generation: %{
-            model_repo_id: "finiteautomata/bertweet-base-emotion-analysis",
-            tokenizer_repo_id: "vinai/bertweet-base",
-            default_text: "Oh wow, I didn't know that!"
-          }
+          id: "conversation",
+          label: "Conversation",
+          variants: [
+            %{
+              id: "dialogpt_small",
+              label: "DialoGPT (small)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/microsoft/DialoGPT-small",
+              generation: %{
+                model_repo_id: "microsoft/DialoGPT-small",
+                tokenizer_repo_id: "gpt2"
+              }
+            },
+            %{
+              id: "dialogpt_medium",
+              label: "DialoGPT (medium)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/microsoft/DialoGPT-medium",
+              generation: %{
+                model_repo_id: "microsoft/DialoGPT-medium",
+                tokenizer_repo_id: "gpt2"
+              }
+            },
+            %{
+              id: "dialogpt_large",
+              label: "DialoGPT (large)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/microsoft/DialoGPT-large",
+              generation: %{
+                model_repo_id: "microsoft/DialoGPT-large",
+                tokenizer_repo_id: "gpt2"
+              }
+            }
+          ],
+          params: [
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 1024},
+            %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
+            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
+          ]
         },
         %{
-          id: "roberta_bertweet_sentiment",
-          label: "RoBERTa (BERTweet) - sentiment",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/finiteautomata/bertweet-base-sentiment-analysis",
-          generation: %{
-            model_repo_id: "finiteautomata/bertweet-base-sentiment-analysis",
-            tokenizer_repo_id: "vinai/bertweet-base",
-            default_text: "Cats are so cute"
-          }
+          id: "fill_mask",
+          label: "Fill-mask",
+          variants: [
+            %{
+              id: "bert_base_uncased",
+              label: "BERT (base uncased)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/bert-base-uncased",
+              generation: %{
+                model_repo_id: "bert-base-uncased",
+                tokenizer_repo_id: "bert-base-uncased",
+                default_text: "Paris is the [MASK] of France."
+              }
+            },
+            %{
+              id: "bert_base_cased",
+              label: "BERT (base cased)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/bert-base-cased",
+              generation: %{
+                model_repo_id: "bert-base-cased",
+                tokenizer_repo_id: "bert-base-cased",
+                default_text: "Paris is the [MASK] of France."
+              }
+            },
+            %{
+              id: "bert_base_multilingual_uncased",
+              label: "BERT (base multilingual uncased)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/bert-base-multilingual-uncased",
+              generation: %{
+                model_repo_id: "bert-base-multilingual-uncased",
+                tokenizer_repo_id: "bert-base-multilingual-uncased",
+                default_text: "Paris est la [MASK] de la France."
+              }
+            },
+            %{
+              id: "bert_base_multilingual_cased",
+              label: "BERT (base multilingual cased)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/bert-base-multilingual-cased",
+              generation: %{
+                model_repo_id: "bert-base-multilingual-cased",
+                tokenizer_repo_id: "bert-base-multilingual-cased",
+                default_text: "Paris est la [MASK] de la France."
+              }
+            },
+            %{
+              id: "roberta_base",
+              label: "RoBERTa (base)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/roberta-base",
+              generation: %{
+                model_repo_id: "roberta-base",
+                tokenizer_repo_id: "roberta-base",
+                default_text: "Elixir is a [MASK] programming language."
+              }
+            },
+            %{
+              id: "distilroberta_base",
+              label: "DistilRoBERTa (base)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/distilroberta-base",
+              generation: %{
+                model_repo_id: "distilroberta-base",
+                tokenizer_repo_id: "distilroberta-base",
+                default_text: "Elixir is a [MASK] programming language."
+              }
+            },
+            %{
+              id: "xlm_roberta_base",
+              label: "XLM-RoBERTa (base)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/xlm-roberta-base",
+              generation: %{
+                model_repo_id: "xlm-roberta-base",
+                tokenizer_repo_id: "xlm-roberta-base",
+                default_text: "Elixir is a [MASK] programming language."
+              }
+            },
+            %{
+              id: "albert_base_v2",
+              label: "ALBERT (base v2)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/albert-base-v2",
+              generation: %{
+                model_repo_id: "albert-base-v2",
+                tokenizer_repo_id: "albert-base-v2",
+                default_text: "Paris is the [MASK] of France."
+              }
+            }
+          ],
+          params: [
+            %{field: "top_k", label: "Top-k", type: :number, default: nil},
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+          ]
         },
         %{
-          id: "roberta_tweets_topic_single",
-          label: "RoBERTa (tweets) - topic",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/cardiffnlp/tweet-topic-latest-single",
-          generation: %{
-            model_repo_id: "cardiffnlp/tweet-topic-latest-single",
-            tokenizer_repo_id: "cardiffnlp/tweet-topic-latest-single",
-            default_text: "We've just started a company, it's happening!"
-          }
+          id: "question_answering",
+          label: "Question answering",
+          variants: [
+            %{
+              id: "distilbert_base_cased",
+              label: "DistilBERT (base cased)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+              generation: %{
+                model_repo_id: "distilbert-base-cased-distilled-squad",
+                tokenizer_repo_id: "distilbert-base-cased-distilled-squad",
+                default_question: "Where do I live?",
+                default_context: "My name is Sarah and I live in London."
+              }
+            },
+            %{
+              id: "bert_large_uncased",
+              label: "BERT (large uncased)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+              generation: %{
+                model_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
+                tokenizer_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
+                default_question: "What's my name?",
+                default_context: "My name is Clara and I live in Berkeley."
+              }
+            },
+            %{
+              id: "roberta_base",
+              label: "RoBERTa (base)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+              generation: %{
+                model_repo_id: "deepset/roberta-base-squad2",
+                tokenizer_repo_id: "roberta-base",
+                default_question: "Where do I live?",
+                default_context: "My name is Wolfgang and I live in Berlin"
+              }
+            }
+          ],
+          params: [
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 500}
+          ]
         },
         %{
-          id: "roberta_tweets_emoji",
-          label: "RoBERTa (tweets) - emoji",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-emoji",
-          generation: %{
-            model_repo_id: "cardiffnlp/twitter-roberta-base-emoji",
-            tokenizer_repo_id: "roberta-base",
-            default_text: "Machine Learning is on fire this year"
-          }
+          id: "text_classification",
+          label: "Text classification",
+          variants: [
+            %{
+              id: "roberta_bertweet_emotion",
+              label: "RoBERTa (BERTweet) - emotion",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/finiteautomata/bertweet-base-emotion-analysis",
+              generation: %{
+                model_repo_id: "finiteautomata/bertweet-base-emotion-analysis",
+                tokenizer_repo_id: "vinai/bertweet-base",
+                default_text: "Oh wow, I didn't know that!"
+              }
+            },
+            %{
+              id: "roberta_bertweet_sentiment",
+              label: "RoBERTa (BERTweet) - sentiment",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/finiteautomata/bertweet-base-sentiment-analysis",
+              generation: %{
+                model_repo_id: "finiteautomata/bertweet-base-sentiment-analysis",
+                tokenizer_repo_id: "vinai/bertweet-base",
+                default_text: "Cats are so cute"
+              }
+            },
+            %{
+              id: "roberta_tweets_topic_single",
+              label: "RoBERTa (tweets) - topic",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/cardiffnlp/tweet-topic-latest-single",
+              generation: %{
+                model_repo_id: "cardiffnlp/tweet-topic-latest-single",
+                tokenizer_repo_id: "cardiffnlp/tweet-topic-latest-single",
+                default_text: "We've just started a company, it's happening!"
+              }
+            },
+            %{
+              id: "roberta_tweets_emoji",
+              label: "RoBERTa (tweets) - emoji",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-emoji",
+              generation: %{
+                model_repo_id: "cardiffnlp/twitter-roberta-base-emoji",
+                tokenizer_repo_id: "roberta-base",
+                default_text: "Machine Learning is on fire this year"
+              }
+            },
+            %{
+              id: "roberta_tweets_offensive",
+              label: "RoBERTa (tweets) - offensive",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-offensive",
+              generation: %{
+                model_repo_id: "cardiffnlp/twitter-roberta-base-offensive",
+                tokenizer_repo_id: "roberta-base",
+                default_text: "I'm not sure what to think about this."
+              }
+            },
+            %{
+              id: "distilroberta_emotion",
+              label: "DistilRoBERTa - emotion",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/j-hartmann/emotion-english-distilroberta-base",
+              generation: %{
+                model_repo_id: "j-hartmann/emotion-english-distilroberta-base",
+                tokenizer_repo_id: "j-hartmann/emotion-english-distilroberta-base",
+                default_text: "Oh wow, I didn't know that!"
+              }
+            },
+            %{
+              id: "xlm_roberta_language_detection",
+              label: "XLM-RoBERTa - language detection",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/papluca/xlm-roberta-base-language-detection",
+              generation: %{
+                model_repo_id: "papluca/xlm-roberta-base-language-detection",
+                tokenizer_repo_id: "papluca/xlm-roberta-base-language-detection",
+                default_text: "La casa de papel"
+              }
+            },
+            %{
+              id: "bert_finbert_sentiment",
+              label: "BERT (FinBERT) - finance sentiment",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/ProsusAI/finbert",
+              generation: %{
+                model_repo_id: "ProsusAI/finbert",
+                tokenizer_repo_id: "bert-base-uncased",
+                default_text:
+                  "Our stock predictions indicate that we can expect a rapid growth over the next year."
+              }
+            }
+          ],
+          params: [
+            %{field: "top_k", label: "Top-k", type: :number, default: nil},
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+          ]
         },
         %{
-          id: "roberta_tweets_offensive",
-          label: "RoBERTa (tweets) - offensive",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-offensive",
-          generation: %{
-            model_repo_id: "cardiffnlp/twitter-roberta-base-offensive",
-            tokenizer_repo_id: "roberta-base",
-            default_text: "I'm not sure what to think about this."
-          }
+          id: "token_classification",
+          label: "Token classification",
+          variants: [
+            %{
+              id: "bert_base_cased_ner",
+              label: "BERT (base cased) - named-entity recognition",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/dslim/bert-base-NER",
+              generation: %{
+                model_repo_id: "dslim/bert-base-NER",
+                tokenizer_repo_id: "bert-base-cased",
+                default_text:
+                  "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends."
+              }
+            },
+            %{
+              id: "bert_base_uncased_pos",
+              label: "BERT (base uncased) - part of speech",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/vblagoje/bert-english-uncased-finetuned-pos",
+              generation: %{
+                model_repo_id: "vblagoje/bert-english-uncased-finetuned-pos",
+                tokenizer_repo_id: "bert-base-uncased",
+                default_text:
+                  "Elixir is a dynamic, functional language for building scalable and maintainable applications."
+              }
+            },
+            %{
+              id: "roberta_base_upos",
+              label: "RobBERTa (base) - universal part of speech",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/KoichiYasuoka/roberta-base-english-upos",
+              generation: %{
+                model_repo_id: "KoichiYasuoka/roberta-base-english-upos",
+                tokenizer_repo_id: "roberta-base",
+                default_text:
+                  "Elixir is a dynamic, functional language for building scalable and maintainable applications."
+              }
+            },
+            %{
+              id: "xlm_roberta_base_punctuation",
+              label: "RobBERTa (base) - punctuation",
+              docs_logo: "huggingface_logo.svg",
+              docs_url:
+                "https://huggingface.co/oliverguhr/fullstop-punctuation-multilingual-sonar-base",
+              generation: %{
+                model_repo_id: "oliverguhr/fullstop-punctuation-multilingual-sonar-base",
+                tokenizer_repo_id: "oliverguhr/fullstop-punctuation-multilingual-sonar-base",
+                default_text:
+                  "Elixir is a functional concurrent general-purpose programming language that runs on the BEAM virtual machine which is also used to implement the Erlang programming language"
+              }
+            }
+          ],
+          params: [
+            %{
+              field: "aggregation",
+              label: "Aggregation",
+              type: :select,
+              options: [%{value: nil, label: "None"}, %{value: "same", label: "Same"}],
+              default: "same"
+            },
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+          ]
         },
         %{
-          id: "distilroberta_emotion",
-          label: "DistilRoBERTa - emotion",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/j-hartmann/emotion-english-distilroberta-base",
-          generation: %{
-            model_repo_id: "j-hartmann/emotion-english-distilroberta-base",
-            tokenizer_repo_id: "j-hartmann/emotion-english-distilroberta-base",
-            default_text: "Oh wow, I didn't know that!"
-          }
+          id: "text_generation",
+          label: "Text generation",
+          variants: [
+            %{
+              id: "gpt2",
+              label: "GPT2 (base)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/gpt2",
+              generation: %{
+                model_repo_id: "gpt2",
+                tokenizer_repo_id: "gpt2",
+                default_text: "Yesterday, I was reading a book and"
+              }
+            },
+            %{
+              id: "gpt2_medium",
+              label: "GPT2 (medium)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/gpt2-medium",
+              generation: %{
+                model_repo_id: "gpt2-medium",
+                tokenizer_repo_id: "gpt2-medium",
+                default_text: "Yesterday, I was reading a book and"
+              }
+            },
+            %{
+              id: "gpt2_large",
+              label: "GPT2 (large)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/gpt2-large",
+              generation: %{
+                model_repo_id: "gpt2-large",
+                tokenizer_repo_id: "gpt2-large",
+                default_text: "Yesterday, I was reading a book and"
+              }
+            },
+            %{
+              id: "gpt2_xl",
+              label: "GPT2 (xl)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/gpt2-xl",
+              generation: %{
+                model_repo_id: "gpt2-xl",
+                tokenizer_repo_id: "gpt2-xl",
+                default_text: "Yesterday, I was reading a book and"
+              }
+            },
+            %{
+              id: "distilgpt2",
+              label: "DistilGPT2 (base)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/distilgpt2",
+              generation: %{
+                model_repo_id: "distilgpt2",
+                tokenizer_repo_id: "distilgpt2",
+                default_text: "Yesterday, I was reading a book and"
+              }
+            },
+            %{
+              id: "bart_xsum_summarization",
+              label: "BART (XSum) - summarization",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/sshleifer/distilbart-xsum-12-3",
+              generation: %{
+                model_repo_id: "sshleifer/distilbart-xsum-12-3",
+                tokenizer_repo_id: "facebook/bart-large-xsum",
+                default_text:
+                  "The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest man-made structure in the world, a title it held for 41 years until the Chrysler Building in New York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second tallest free-standing structure in France after the Millau Viaduct."
+              }
+            },
+            %{
+              id: "bart_cnn_summarization",
+              label: "BART (CNN) - summarization",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/sshleifer/distilbart-cnn-12-6",
+              generation: %{
+                model_repo_id: "sshleifer/distilbart-cnn-12-6",
+                tokenizer_repo_id: "facebook/bart-large-cnn",
+                default_text:
+                  "The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest man-made structure in the world, a title it held for 41 years until the Chrysler Building in New York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second tallest free-standing structure in France after the Millau Viaduct."
+              }
+            }
+          ],
+          params: [
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100},
+            %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
+            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 10}
+          ]
         },
         %{
-          id: "xlm_roberta_language_detection",
-          label: "XLM-RoBERTa - language detection",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/papluca/xlm-roberta-base-language-detection",
-          generation: %{
-            model_repo_id: "papluca/xlm-roberta-base-language-detection",
-            tokenizer_repo_id: "papluca/xlm-roberta-base-language-detection",
-            default_text: "La casa de papel"
-          }
-        },
-        %{
-          id: "bert_finbert_sentiment",
-          label: "BERT (FinBERT) - finance sentiment",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/ProsusAI/finbert",
-          generation: %{
-            model_repo_id: "ProsusAI/finbert",
-            tokenizer_repo_id: "bert-base-uncased",
-            default_text:
-              "Our stock predictions indicate that we can expect a rapid growth over the next year."
-          }
+          id: "zero_shot_text_classification",
+          label: "Zero-shot text classification",
+          variants: [
+            %{
+              id: "bart_large_mnli",
+              label: "BART (large MNLI)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/facebook/bart-large-mnli",
+              generation: %{
+                model_repo_id: "facebook/bart-large-mnli",
+                tokenizer_repo_id: "facebook/bart-large-mnli",
+                default_text: "One day I will see the world."
+              }
+            },
+            %{
+              id: "xlm_roberta_large_xnli",
+              label: "XLM-RoBERTa (large XNLI) - multilingual",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/joeddav/xlm-roberta-large-xnli",
+              generation: %{
+                model_repo_id: "joeddav/xlm-roberta-large-xnli",
+                tokenizer_repo_id: "xlm-roberta-large",
+                default_text: "Un jour je verrai le monde."
+              }
+            }
+          ],
+          params: [
+            %{
+              field: "labels",
+              label: "Labels (comma-separated)",
+              type: :text,
+              default: "cooking, traveling, dancing"
+            },
+            %{field: "top_k", label: "Top-k", type: :number, default: nil},
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
+          ]
         }
-      ],
-      params: [
-        %{field: "top_k", label: "Top-k", type: :number, default: nil},
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
       ]
     },
     %{
-      id: "token_classification",
-      label: "Token classification",
-      variants: [
+      label: "Audio",
+      tasks: [
         %{
-          id: "bert_base_cased_ner",
-          label: "BERT (base cased) - named-entity recognition",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/dslim/bert-base-NER",
-          generation: %{
-            model_repo_id: "dslim/bert-base-NER",
-            tokenizer_repo_id: "bert-base-cased",
-            default_text:
-              "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends."
-          }
-        },
-        %{
-          id: "bert_base_uncased_pos",
-          label: "BERT (base uncased) - part of speech",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/vblagoje/bert-english-uncased-finetuned-pos",
-          generation: %{
-            model_repo_id: "vblagoje/bert-english-uncased-finetuned-pos",
-            tokenizer_repo_id: "bert-base-uncased",
-            default_text:
-              "Elixir is a dynamic, functional language for building scalable and maintainable applications."
-          }
-        },
-        %{
-          id: "roberta_base_upos",
-          label: "RobBERTa (base) - universal part of speech",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/KoichiYasuoka/roberta-base-english-upos",
-          generation: %{
-            model_repo_id: "KoichiYasuoka/roberta-base-english-upos",
-            tokenizer_repo_id: "roberta-base",
-            default_text:
-              "Elixir is a dynamic, functional language for building scalable and maintainable applications."
-          }
-        },
-        %{
-          id: "xlm_roberta_base_punctuation",
-          label: "RobBERTa (base) - punctuation",
-          docs_logo: "huggingface_logo.svg",
-          docs_url:
-            "https://huggingface.co/oliverguhr/fullstop-punctuation-multilingual-sonar-base",
-          generation: %{
-            model_repo_id: "oliverguhr/fullstop-punctuation-multilingual-sonar-base",
-            tokenizer_repo_id: "oliverguhr/fullstop-punctuation-multilingual-sonar-base",
-            default_text:
-              "Elixir is a functional concurrent general-purpose programming language that runs on the BEAM virtual machine which is also used to implement the Erlang programming language"
-          }
+          id: "speech_to_text",
+          label: "Speech-to-text",
+          variants: [
+            %{
+              id: "whisper_tiny",
+              label: "Whisper (tiny multilingual)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/openai/whisper-tiny",
+              generation: %{
+                model_repo_id: "openai/whisper-tiny",
+                featurizer_repo_id: "openai/whisper-tiny",
+                tokenizer_repo_id: "openai/whisper-tiny"
+              }
+            },
+            %{
+              id: "whisper_base",
+              label: "Whisper (base multilingual)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/openai/whisper-base",
+              generation: %{
+                model_repo_id: "openai/whisper-base",
+                featurizer_repo_id: "openai/whisper-base",
+                tokenizer_repo_id: "openai/whisper-base"
+              }
+            },
+            %{
+              id: "whisper_small",
+              label: "Whisper (small multilingual)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/openai/whisper-small",
+              generation: %{
+                model_repo_id: "openai/whisper-small",
+                featurizer_repo_id: "openai/whisper-small",
+                tokenizer_repo_id: "openai/whisper-small"
+              }
+            },
+            %{
+              id: "whisper_medium",
+              label: "Whisper (medium multilingual)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/openai/whisper-medium",
+              generation: %{
+                model_repo_id: "openai/whisper-medium",
+                featurizer_repo_id: "openai/whisper-medium",
+                tokenizer_repo_id: "openai/whisper-medium"
+              }
+            },
+            %{
+              id: "whisper_large",
+              label: "Whisper (large multilingual)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/openai/whisper-large",
+              generation: %{
+                model_repo_id: "openai/whisper-large",
+                featurizer_repo_id: "openai/whisper-large",
+                tokenizer_repo_id: "openai/whisper-large"
+              }
+            }
+          ],
+          params: [
+            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
+          ]
         }
-      ],
-      params: [
-        %{
-          field: "aggregation",
-          label: "Aggregation",
-          type: :select,
-          options: [%{value: nil, label: "None"}, %{value: "same", label: "Same"}],
-          default: "same"
-        },
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
       ]
     },
     %{
-      id: "zero_shot_text_classification",
-      label: "Zero-shot text classification",
-      variants: [
+      label: "Multimodal",
+      tasks: [
         %{
-          id: "bart_large_mnli",
-          label: "BART (large MNLI)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/facebook/bart-large-mnli",
-          generation: %{
-            model_repo_id: "facebook/bart-large-mnli",
-            tokenizer_repo_id: "facebook/bart-large-mnli",
-            default_text: "One day I will see the world."
-          }
-        },
-        %{
-          id: "xlm_roberta_large_xnli",
-          label: "XLM-RoBERTa (large XNLI) - multilingual",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/joeddav/xlm-roberta-large-xnli",
-          generation: %{
-            model_repo_id: "joeddav/xlm-roberta-large-xnli",
-            tokenizer_repo_id: "xlm-roberta-large",
-            default_text: "Un jour je verrai le monde."
-          }
+          id: "text_to_image",
+          label: "Text-to-image",
+          variants: [
+            %{
+              id: "stable_diffusion_v1_4",
+              label: "Stable Diffusion (v1.4)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/CompVis/stable-diffusion-v1-4",
+              generation: %{
+                repo_id: "CompVis/stable-diffusion-v1-4",
+                default_text: "numbat, forest, high quality, detailed, digital art"
+              }
+            },
+            %{
+              id: "stable_diffusion_anime",
+              label: "Stable Diffusion (anime)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/Linaqruf/anything-v3.0",
+              generation: %{
+                repo_id: "Linaqruf/anything-v3.0",
+                default_text:
+                  "scenery, shibuya tokyo, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset"
+              }
+            },
+            %{
+              id: "stable_diffusion_ghibli",
+              label: "Stable Diffusion (Ghibli style)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/nitrosocke/Ghibli-Diffusion",
+              generation: %{
+                repo_id: "nitrosocke/Ghibli-Diffusion",
+                default_text: "ghibli style numbat in forest"
+              }
+            },
+            %{
+              id: "stable_diffusion_modern_disney",
+              label: "Stable Diffusion (modern Disney style)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/nitrosocke/mo-di-diffusion",
+              generation: %{
+                repo_id: "nitrosocke/mo-di-diffusion",
+                default_text: "modern disney style grumpy cat"
+              }
+            },
+            %{
+              id: "stable_diffusion_classic_disney",
+              label: "Stable Diffusion (classic Disney style)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/nitrosocke/classic-anim-diffusion",
+              generation: %{
+                repo_id: "nitrosocke/classic-anim-diffusion",
+                default_text: "classic disney style albert einstein"
+              }
+            },
+            %{
+              id: "stable_diffusion_classic_redshift",
+              label: "Stable Diffusion (redshift style)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/nitrosocke/redshift-diffusion",
+              generation: %{
+                repo_id: "nitrosocke/redshift-diffusion",
+                default_text: "redshift style batman"
+              }
+            }
+          ],
+          params: [
+            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 50},
+            %{field: "num_steps", label: "Number of steps", type: :number, default: 20},
+            %{
+              field: "num_images_per_prompt",
+              label: "Number of images",
+              type: :number,
+              default: 2
+            },
+            %{field: "seed", label: "Seed", type: :number, default: nil}
+          ],
+          note:
+            "this is a very involved task, the generation can take a long time if you run it on a CPU. To achieve a better quality increase the number of steps, 40 is usually a better default."
         }
-      ],
-      params: [
-        %{
-          field: "labels",
-          label: "Labels (comma-separated)",
-          type: :text,
-          default: "cooking, traveling, dancing"
-        },
-        %{field: "top_k", label: "Top-k", type: :number, default: nil},
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
       ]
-    },
-    %{
-      id: "fill_mask",
-      label: "Fill-mask",
-      variants: [
-        %{
-          id: "bert_base_uncased",
-          label: "BERT (base uncased)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/bert-base-uncased",
-          generation: %{
-            model_repo_id: "bert-base-uncased",
-            tokenizer_repo_id: "bert-base-uncased",
-            default_text: "Paris is the [MASK] of France."
-          }
-        },
-        %{
-          id: "bert_base_cased",
-          label: "BERT (base cased)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/bert-base-cased",
-          generation: %{
-            model_repo_id: "bert-base-cased",
-            tokenizer_repo_id: "bert-base-cased",
-            default_text: "Paris is the [MASK] of France."
-          }
-        },
-        %{
-          id: "bert_base_multilingual_uncased",
-          label: "BERT (base multilingual uncased)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/bert-base-multilingual-uncased",
-          generation: %{
-            model_repo_id: "bert-base-multilingual-uncased",
-            tokenizer_repo_id: "bert-base-multilingual-uncased",
-            default_text: "Paris est la [MASK] de la France."
-          }
-        },
-        %{
-          id: "bert_base_multilingual_cased",
-          label: "BERT (base multilingual cased)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/bert-base-multilingual-cased",
-          generation: %{
-            model_repo_id: "bert-base-multilingual-cased",
-            tokenizer_repo_id: "bert-base-multilingual-cased",
-            default_text: "Paris est la [MASK] de la France."
-          }
-        },
-        %{
-          id: "roberta_base",
-          label: "RoBERTa (base)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/roberta-base",
-          generation: %{
-            model_repo_id: "roberta-base",
-            tokenizer_repo_id: "roberta-base",
-            default_text: "Elixir is a [MASK] programming language."
-          }
-        },
-        %{
-          id: "distilroberta_base",
-          label: "DistilRoBERTa (base)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/distilroberta-base",
-          generation: %{
-            model_repo_id: "distilroberta-base",
-            tokenizer_repo_id: "distilroberta-base",
-            default_text: "Elixir is a [MASK] programming language."
-          }
-        },
-        %{
-          id: "xlm_roberta_base",
-          label: "XLM-RoBERTa (base)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/xlm-roberta-base",
-          generation: %{
-            model_repo_id: "xlm-roberta-base",
-            tokenizer_repo_id: "xlm-roberta-base",
-            default_text: "Elixir is a [MASK] programming language."
-          }
-        },
-        %{
-          id: "albert_base_v2",
-          label: "ALBERT (base v2)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/albert-base-v2",
-          generation: %{
-            model_repo_id: "albert-base-v2",
-            tokenizer_repo_id: "albert-base-v2",
-            default_text: "Paris is the [MASK] of France."
-          }
-        }
-      ],
-      params: [
-        %{field: "top_k", label: "Top-k", type: :number, default: nil},
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100}
-      ]
-    },
-    %{
-      id: "question_answering",
-      label: "Question answering",
-      variants: [
-        %{
-          id: "distilbert_base_cased",
-          label: "DistilBERT (base cased)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
-          generation: %{
-            model_repo_id: "distilbert-base-cased-distilled-squad",
-            tokenizer_repo_id: "distilbert-base-cased-distilled-squad",
-            default_question: "Where do I live?",
-            default_context: "My name is Sarah and I live in London."
-          }
-        },
-        %{
-          id: "bert_large_uncased",
-          label: "BERT (large uncased)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
-          generation: %{
-            model_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
-            tokenizer_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
-            default_question: "What's my name?",
-            default_context: "My name is Clara and I live in Berkeley."
-          }
-        },
-        %{
-          id: "roberta_base",
-          label: "RoBERTa (base)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
-          generation: %{
-            model_repo_id: "deepset/roberta-base-squad2",
-            tokenizer_repo_id: "roberta-base",
-            default_question: "Where do I live?",
-            default_context: "My name is Wolfgang and I live in Berlin"
-          }
-        }
-      ],
-      params: [
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 500}
-      ]
-    },
-    %{
-      id: "text_generation",
-      label: "Text generation",
-      variants: [
-        %{
-          id: "gpt2",
-          label: "GPT2 (base)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/gpt2",
-          generation: %{
-            model_repo_id: "gpt2",
-            tokenizer_repo_id: "gpt2",
-            default_text: "Yesterday, I was reading a book and"
-          }
-        },
-        %{
-          id: "gpt2_medium",
-          label: "GPT2 (medium)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/gpt2-medium",
-          generation: %{
-            model_repo_id: "gpt2-medium",
-            tokenizer_repo_id: "gpt2-medium",
-            default_text: "Yesterday, I was reading a book and"
-          }
-        },
-        %{
-          id: "gpt2_large",
-          label: "GPT2 (large)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/gpt2-large",
-          generation: %{
-            model_repo_id: "gpt2-large",
-            tokenizer_repo_id: "gpt2-large",
-            default_text: "Yesterday, I was reading a book and"
-          }
-        },
-        %{
-          id: "gpt2_xl",
-          label: "GPT2 (xl)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/gpt2-xl",
-          generation: %{
-            model_repo_id: "gpt2-xl",
-            tokenizer_repo_id: "gpt2-xl",
-            default_text: "Yesterday, I was reading a book and"
-          }
-        },
-        %{
-          id: "distilgpt2",
-          label: "DistilGPT2 (base)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/distilgpt2",
-          generation: %{
-            model_repo_id: "distilgpt2",
-            tokenizer_repo_id: "distilgpt2",
-            default_text: "Yesterday, I was reading a book and"
-          }
-        },
-        %{
-          id: "bart_xsum_summarization",
-          label: "BART (XSum) - summarization",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/sshleifer/distilbart-xsum-12-3",
-          generation: %{
-            model_repo_id: "sshleifer/distilbart-xsum-12-3",
-            tokenizer_repo_id: "facebook/bart-large-xsum",
-            default_text:
-              "The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest man-made structure in the world, a title it held for 41 years until the Chrysler Building in New York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second tallest free-standing structure in France after the Millau Viaduct."
-          }
-        },
-        %{
-          id: "bart_cnn_summarization",
-          label: "BART (CNN) - summarization",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/sshleifer/distilbart-cnn-12-6",
-          generation: %{
-            model_repo_id: "sshleifer/distilbart-cnn-12-6",
-            tokenizer_repo_id: "facebook/bart-large-cnn",
-            default_text:
-              "The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, and the tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. During its construction, the Eiffel Tower surpassed the Washington Monument to become the tallest man-made structure in the world, a title it held for 41 years until the Chrysler Building in New York City was finished in 1930. It was the first structure to reach a height of 300 metres. Due to the addition of a broadcasting aerial at the top of the tower in 1957, it is now taller than the Chrysler Building by 5.2 metres (17 ft). Excluding transmitters, the Eiffel Tower is the second tallest free-standing structure in France after the Millau Viaduct."
-          }
-        }
-      ],
-      params: [
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100},
-        %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
-        %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 10}
-      ]
-    },
-    %{
-      id: "speech_to_text",
-      label: "Speech-to-text",
-      variants: [
-        %{
-          id: "whisper_tiny",
-          label: "Whisper (tiny multilingual)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/openai/whisper-tiny",
-          generation: %{
-            model_repo_id: "openai/whisper-tiny",
-            featurizer_repo_id: "openai/whisper-tiny",
-            tokenizer_repo_id: "openai/whisper-tiny"
-          }
-        },
-        %{
-          id: "whisper_base",
-          label: "Whisper (base multilingual)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/openai/whisper-base",
-          generation: %{
-            model_repo_id: "openai/whisper-base",
-            featurizer_repo_id: "openai/whisper-base",
-            tokenizer_repo_id: "openai/whisper-base"
-          }
-        },
-        %{
-          id: "whisper_small",
-          label: "Whisper (small multilingual)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/openai/whisper-small",
-          generation: %{
-            model_repo_id: "openai/whisper-small",
-            featurizer_repo_id: "openai/whisper-small",
-            tokenizer_repo_id: "openai/whisper-small"
-          }
-        },
-        %{
-          id: "whisper_medium",
-          label: "Whisper (medium multilingual)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/openai/whisper-medium",
-          generation: %{
-            model_repo_id: "openai/whisper-medium",
-            featurizer_repo_id: "openai/whisper-medium",
-            tokenizer_repo_id: "openai/whisper-medium"
-          }
-        },
-        %{
-          id: "whisper_large",
-          label: "Whisper (large multilingual)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/openai/whisper-large",
-          generation: %{
-            model_repo_id: "openai/whisper-large",
-            featurizer_repo_id: "openai/whisper-large",
-            tokenizer_repo_id: "openai/whisper-large"
-          }
-        }
-      ],
-      params: [
-        %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
-      ]
-    },
-    %{
-      id: "conversation",
-      label: "Conversation",
-      variants: [
-        %{
-          id: "dialogpt_small",
-          label: "DialoGPT (small)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/microsoft/DialoGPT-small",
-          generation: %{
-            model_repo_id: "microsoft/DialoGPT-small",
-            tokenizer_repo_id: "gpt2"
-          }
-        },
-        %{
-          id: "dialogpt_medium",
-          label: "DialoGPT (medium)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/microsoft/DialoGPT-medium",
-          generation: %{
-            model_repo_id: "microsoft/DialoGPT-medium",
-            tokenizer_repo_id: "gpt2"
-          }
-        },
-        %{
-          id: "dialogpt_large",
-          label: "DialoGPT (large)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/microsoft/DialoGPT-large",
-          generation: %{
-            model_repo_id: "microsoft/DialoGPT-large",
-            tokenizer_repo_id: "gpt2"
-          }
-        }
-      ],
-      params: [
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 1024},
-        %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
-        %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
-      ]
-    },
-    %{
-      id: "text_to_image",
-      label: "Text-to-image",
-      variants: [
-        %{
-          id: "stable_diffusion_v1_4",
-          label: "Stable Diffusion (v1.4)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/CompVis/stable-diffusion-v1-4",
-          generation: %{
-            repo_id: "CompVis/stable-diffusion-v1-4",
-            default_text: "numbat, forest, high quality, detailed, digital art"
-          }
-        },
-        %{
-          id: "stable_diffusion_anime",
-          label: "Stable Diffusion (anime)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/Linaqruf/anything-v3.0",
-          generation: %{
-            repo_id: "Linaqruf/anything-v3.0",
-            default_text:
-              "scenery, shibuya tokyo, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset"
-          }
-        },
-        %{
-          id: "stable_diffusion_ghibli",
-          label: "Stable Diffusion (Ghibli style)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/nitrosocke/Ghibli-Diffusion",
-          generation: %{
-            repo_id: "nitrosocke/Ghibli-Diffusion",
-            default_text: "ghibli style numbat in forest"
-          }
-        },
-        %{
-          id: "stable_diffusion_modern_disney",
-          label: "Stable Diffusion (modern Disney style)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/nitrosocke/mo-di-diffusion",
-          generation: %{
-            repo_id: "nitrosocke/mo-di-diffusion",
-            default_text: "modern disney style grumpy cat"
-          }
-        },
-        %{
-          id: "stable_diffusion_classic_disney",
-          label: "Stable Diffusion (classic Disney style)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/nitrosocke/classic-anim-diffusion",
-          generation: %{
-            repo_id: "nitrosocke/classic-anim-diffusion",
-            default_text: "classic disney style albert einstein"
-          }
-        },
-        %{
-          id: "stable_diffusion_classic_redshift",
-          label: "Stable Diffusion (redshift style)",
-          docs_logo: "huggingface_logo.svg",
-          docs_url: "https://huggingface.co/nitrosocke/redshift-diffusion",
-          generation: %{
-            repo_id: "nitrosocke/redshift-diffusion",
-            default_text: "redshift style batman"
-          }
-        }
-      ],
-      params: [
-        %{field: "sequence_length", label: "Max input tokens", type: :number, default: 50},
-        %{field: "num_steps", label: "Number of steps", type: :number, default: 20},
-        %{field: "num_images_per_prompt", label: "Number of images", type: :number, default: 2},
-        %{field: "seed", label: "Seed", type: :number, default: nil}
-      ],
-      note:
-        "this is a very involved task, the generation can take a long time if you run it on a CPU. To achieve a better quality increase the number of steps, 40 is usually a better default."
     }
   ]
 
-  @default_task_id get_in(@tasks, [Access.at!(0), :id])
-  @default_variant_id get_in(@tasks, [Access.at!(0), :variants, Access.at!(0), :id])
+  default_task = get_in(@task_groups, [Access.at!(0), :tasks, Access.at!(0)])
+
+  @default_task_id default_task.id
+  @default_variant_id get_in(default_task, [:variants, Access.at!(0), :id])
 
   @impl true
   def init(attrs, ctx) do
@@ -724,7 +751,7 @@ defmodule KinoBumblebee.TaskCell do
     {:ok,
      %{
        fields: ctx.assigns.fields,
-       tasks: tasks(),
+       task_groups: task_groups(),
        missing_dep: ctx.assigns.missing_dep,
        is_binary_backend: ctx.assigns.default_backend == Nx.BinaryBackend
      }, ctx}
@@ -847,19 +874,20 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Stream.filter(& &1.data.image)
-        |> Kino.listen(fn %{data: %{image: image}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{image: image}} ->
+          if image do
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
-          image = image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
-          output = Nx.Serving.run(serving, image)
+            image =
+              image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
 
-          output.predictions
-          |> Enum.map(&{&1.label, &1.score})
-          |> Kino.Bumblebee.ScoredList.new()
-          |> then(&Kino.Frame.render(frame, &1))
+            output = Nx.Serving.run(serving, image)
+
+            output.predictions
+            |> Enum.map(&{&1.label, &1.score})
+            |> Kino.Bumblebee.ScoredList.new()
+            |> then(&Kino.Frame.render(frame, &1))
+          end
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -893,10 +921,8 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
 
@@ -937,10 +963,8 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
           output = Nx.Serving.run(serving, text)
           Kino.Frame.render(frame, Kino.Bumblebee.HighlightedText.new(text, output.entities))
         end)
@@ -985,10 +1009,8 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
 
@@ -1028,13 +1050,11 @@ defmodule KinoBumblebee.TaskCell do
         form = Kino.Control.form([text: text_input], submit: "Run")
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text}} ->
           one_mask? = match?([_, _], String.split(text, "[MASK]"))
 
           if one_mask? do
-            Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
             output = Nx.Serving.run(serving, text)
 
             output.predictions
@@ -1042,10 +1062,7 @@ defmodule KinoBumblebee.TaskCell do
             |> Kino.Bumblebee.ScoredList.new()
             |> then(&Kino.Frame.render(frame, &1))
           else
-            Kino.Frame.render(
-              frame,
-              Kino.Markdown.new("The text must include exactly one [MASK].")
-            )
+            Kino.Frame.render(frame, Kino.Text.new("The text must include exactly one [MASK]."))
           end
         end)
 
@@ -1080,9 +1097,7 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{question: question, context: context}} ->
+        Kino.listen(form, fn %{data: %{question: question, context: context}} ->
           output = Nx.Serving.run(serving, %{question: question, context: context})
 
           output.results
@@ -1122,12 +1137,10 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
           %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
-          Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+          Kino.Frame.render(frame, Kino.Text.new(generated_text))
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -1161,19 +1174,19 @@ defmodule KinoBumblebee.TaskCell do
 
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{audio: audio}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{audio: audio}} ->
+          if audio do
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
-          audio =
-            audio.data
-            |> Nx.from_binary(:f32)
-            |> Nx.reshape({:auto, audio.num_channels})
-            |> Nx.mean(axes: [1])
+            audio =
+              audio.data
+              |> Nx.from_binary(:f32)
+              |> Nx.reshape({:auto, audio.num_channels})
+              |> Nx.mean(axes: [1])
 
-          %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
-          Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+            %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
+            Kino.Frame.render(frame, Kino.Text.new(generated_text))
+          end
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -1207,9 +1220,7 @@ defmodule KinoBumblebee.TaskCell do
         inputs = [message: Kino.Input.text("Message")]
         form = Kino.Control.form(inputs, submit: "Send message", reset_on_submit: [:message])
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(nil, fn %{data: %{message: message}}, history ->
+        Kino.listen(form, nil, fn %{data: %{message: message}}, history ->
           Kino.Frame.append(frame, Kino.Markdown.new("**Me:** #{message}"))
 
           %{text: text, history: history} =
@@ -1289,10 +1300,8 @@ defmodule KinoBumblebee.TaskCell do
         form = Kino.Control.form([text: text_input], submit: "Run")
         frame = Kino.Frame.new()
 
-        form
-        |> Kino.Control.stream()
-        |> Kino.listen(fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+        Kino.listen(form, fn %{data: %{text: text}} ->
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
 
@@ -1326,7 +1335,9 @@ defmodule KinoBumblebee.TaskCell do
 
   defp to_compiler("exla"), do: EXLA
 
-  defp tasks(), do: @tasks
+  defp task_groups(), do: @task_groups
+
+  defp tasks(), do: Enum.flat_map(task_groups(), & &1.tasks)
 
   defp task_by_id(task_id) do
     Enum.find(tasks(), &(&1.id == task_id))
