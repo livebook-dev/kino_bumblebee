@@ -1175,16 +1175,18 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{audio: audio}} ->
-          Kino.Frame.render(frame, Kino.Text.new("Running..."))
+          if audio do
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
-          audio =
-            audio.data
-            |> Nx.from_binary(:f32)
-            |> Nx.reshape({:auto, audio.num_channels})
-            |> Nx.mean(axes: [1])
+            audio =
+              audio.data
+              |> Nx.from_binary(:f32)
+              |> Nx.reshape({:auto, audio.num_channels})
+              |> Nx.mean(axes: [1])
 
-          %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
-          Kino.Frame.render(frame, Kino.Text.new(generated_text))
+            %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
+            Kino.Frame.render(frame, Kino.Text.new(generated_text))
+          end
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
