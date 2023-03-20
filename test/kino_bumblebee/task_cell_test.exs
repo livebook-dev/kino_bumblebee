@@ -27,7 +27,7 @@ defmodule KinoBumblebee.TaskCellTest do
 
                Kino.listen(form, fn %{data: %{image: image}} ->
                  if image do
-                   Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+                   Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
                    image =
                      image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
@@ -80,7 +80,7 @@ defmodule KinoBumblebee.TaskCellTest do
                frame = Kino.Frame.new()
 
                Kino.listen(form, fn %{data: %{text: text}} ->
-                 Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+                 Kino.Frame.render(frame, Kino.Text.new("Running..."))
                  output = Nx.Serving.run(serving, text)
 
                  output.predictions

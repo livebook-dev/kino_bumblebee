@@ -876,7 +876,7 @@ defmodule KinoBumblebee.TaskCell do
 
         Kino.listen(form, fn %{data: %{image: image}} ->
           if image do
-            Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
             image =
               image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
@@ -922,7 +922,7 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
 
@@ -964,7 +964,7 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
           output = Nx.Serving.run(serving, text)
           Kino.Frame.render(frame, Kino.Bumblebee.HighlightedText.new(text, output.entities))
         end)
@@ -1010,7 +1010,7 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
 
@@ -1054,7 +1054,7 @@ defmodule KinoBumblebee.TaskCell do
           one_mask? = match?([_, _], String.split(text, "[MASK]"))
 
           if one_mask? do
-            Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
             output = Nx.Serving.run(serving, text)
 
             output.predictions
@@ -1062,10 +1062,7 @@ defmodule KinoBumblebee.TaskCell do
             |> Kino.Bumblebee.ScoredList.new()
             |> then(&Kino.Frame.render(frame, &1))
           else
-            Kino.Frame.render(
-              frame,
-              Kino.Markdown.new("The text must include exactly one [MASK].")
-            )
+            Kino.Frame.render(frame, Kino.Text.new("The text must include exactly one [MASK]."))
           end
         end)
 
@@ -1141,9 +1138,9 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
           %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
-          Kino.Frame.render(frame, Kino.Markdown.new(generated_text))
+          Kino.Frame.render(frame, Kino.Text.new(generated_text))
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
@@ -1178,7 +1175,7 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{audio: audio}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           audio =
             audio.data
@@ -1302,7 +1299,7 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Markdown.new("Running..."))
+          Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
           output = Nx.Serving.run(serving, text)
 
