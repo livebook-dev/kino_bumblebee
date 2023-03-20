@@ -27,7 +27,7 @@ defmodule KinoBumblebee.MixProject do
   defp deps do
     [
       {:bumblebee, "~> 0.2.0"},
-      {:kino, "~> 0.8"},
+      {:kino, "~> 0.9"},
       {:nx, "~> 0.5.0"},
       {:exla, "~> 0.5.0", only: [:dev, :test]},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
