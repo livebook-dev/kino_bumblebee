@@ -32,6 +32,10 @@ A couple examples of what's possible:
 
 ![](.github/images/image_classification.png)
 
+### Image-to-text
+
+![](.github/images/image_to_text.png)
+
 ### Text classification
 
 ![](.github/images/text_classification.png)

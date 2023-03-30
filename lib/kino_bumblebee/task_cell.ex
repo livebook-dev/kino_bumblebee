@@ -57,6 +57,38 @@ defmodule KinoBumblebee.TaskCell do
           params: [
             %{field: "top_k", label: "Top-k", type: :number, default: nil}
           ]
+        },
+        %{
+          id: "image_to_text",
+          label: "Image-to-text",
+          variants: [
+            %{
+              id: "blip_captioning_base",
+              label: "BLIP (base) - image captioning",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/Salesforce/blip-image-captioning-base",
+              generation: %{
+                model_repo_id: "Salesforce/blip-image-captioning-base",
+                featurizer_repo_id: "Salesforce/blip-image-captioning-base",
+                tokenizer_repo_id: "Salesforce/blip-image-captioning-base"
+              }
+            },
+            %{
+              id: "blip_captioning_large",
+              label: "BLIP (large) - image captioning",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/Salesforce/blip-image-captioning-large",
+              generation: %{
+                model_repo_id: "Salesforce/blip-image-captioning-large",
+                featurizer_repo_id: "Salesforce/blip-image-captioning-large",
+                tokenizer_repo_id: "Salesforce/blip-image-captioning-large"
+              }
+            }
+          ],
+          params: [
+            %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
+            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
+          ]
         }
       ]
     },
@@ -917,6 +949,52 @@ defmodule KinoBumblebee.TaskCell do
             |> Enum.map(&{&1.label, &1.score})
             |> Kino.Bumblebee.ScoredList.new()
             |> then(&Kino.Frame.render(frame, &1))
+          end
+        end)
+
+        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+      end
+    ]
+  end
+
+  defp to_quoted(%{"task_id" => "image_to_text"} = attrs) do
+    opts =
+      drop_nil_options(
+        min_new_tokens: attrs["min_new_tokens"],
+        max_new_tokens: attrs["max_new_tokens"]
+      ) ++
+        [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+
+    %{generation: generation} = variant_from_attrs(attrs)
+
+    [
+      quote do
+        {:ok, model_info} =
+          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+
+        {:ok, featurizer} =
+          Bumblebee.load_featurizer({:hf, unquote(generation.featurizer_repo_id)})
+
+        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
+
+        serving = Bumblebee.Vision.image_to_text(model_info, featurizer, tokenizer, unquote(opts))
+      end,
+      quote do
+        image_input = Kino.Input.image("Image", size: {384, 384})
+        form = Kino.Control.form([image: image_input], submit: "Run")
+
+        frame = Kino.Frame.new()
+
+        Kino.listen(form, fn %{data: %{image: image}} ->
+          if image do
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
+
+            image =
+              image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
+
+            %{results: [%{text: text}]} = Nx.Serving.run(serving, image)
+
+            Kino.Frame.render(frame, Kino.Text.new(text))
           end
         end)
 
