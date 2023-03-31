@@ -13,9 +13,7 @@ defmodule KinoBumblebee.TaskCellTest do
 
       assert source ==
                """
-               {:ok, model_info} =
-                 Bumblebee.load_model({:hf, "microsoft/resnet-50"}, log_params_diff: false)
-
+               {:ok, model_info} = Bumblebee.load_model({:hf, "microsoft/resnet-50"})
                {:ok, featurizer} = Bumblebee.load_featurizer({:hf, "microsoft/resnet-50"})
 
                serving =
@@ -58,9 +56,7 @@ defmodule KinoBumblebee.TaskCellTest do
 
       assert source ==
                """
-               {:ok, model_info} =
-                 Bumblebee.load_model({:hf, "ProsusAI/finbert"}, log_params_diff: false)
-
+               {:ok, model_info} = Bumblebee.load_model({:hf, "ProsusAI/finbert"})
                {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "bert-base-uncased"})
 
                serving =

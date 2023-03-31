@@ -922,8 +922,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, featurizer} =
           Bumblebee.load_featurizer({:hf, unquote(generation.featurizer_repo_id)})
@@ -969,8 +968,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, featurizer} =
           Bumblebee.load_featurizer({:hf, unquote(generation.featurizer_repo_id)})
@@ -1016,8 +1014,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1058,8 +1055,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1101,8 +1097,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1146,8 +1141,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1188,8 +1182,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1232,8 +1225,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1266,8 +1258,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, featurizer} =
           Bumblebee.load_featurizer({:hf, unquote(generation.featurizer_repo_id)})
@@ -1315,8 +1306,7 @@ defmodule KinoBumblebee.TaskCell do
 
     [
       quote do
-        {:ok, model_info} =
-          Bumblebee.load_model({:hf, unquote(generation.model_repo_id)}, log_params_diff: false)
+        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
@@ -1365,22 +1355,17 @@ defmodule KinoBumblebee.TaskCell do
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "openai/clip-vit-large-patch14"})
 
-        {:ok, clip} =
-          Bumblebee.load_model({:hf, repository_id, subdir: "text_encoder"},
-            log_params_diff: false
-          )
+        {:ok, clip} = Bumblebee.load_model({:hf, repository_id, subdir: "text_encoder"})
 
         {:ok, unet} =
           Bumblebee.load_model({:hf, repository_id, subdir: "unet"},
-            params_filename: "diffusion_pytorch_model.bin",
-            log_params_diff: false
+            params_filename: "diffusion_pytorch_model.bin"
           )
 
         {:ok, vae} =
           Bumblebee.load_model({:hf, repository_id, subdir: "vae"},
             architecture: :decoder,
-            params_filename: "diffusion_pytorch_model.bin",
-            log_params_diff: false
+            params_filename: "diffusion_pytorch_model.bin"
           )
 
         {:ok, scheduler} = Bumblebee.load_scheduler({:hf, repository_id, subdir: "scheduler"})
@@ -1389,9 +1374,7 @@ defmodule KinoBumblebee.TaskCell do
           Bumblebee.load_featurizer({:hf, repository_id, subdir: "feature_extractor"})
 
         {:ok, safety_checker} =
-          Bumblebee.load_model({:hf, repository_id, subdir: "safety_checker"},
-            log_params_diff: false
-          )
+          Bumblebee.load_model({:hf, repository_id, subdir: "safety_checker"})
 
         serving =
           Bumblebee.Diffusion.StableDiffusion.text_to_image(
