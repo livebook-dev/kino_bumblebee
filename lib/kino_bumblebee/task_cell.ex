@@ -907,22 +907,7 @@ defmodule KinoBumblebee.TaskCell do
 
   @impl true
   def to_source(attrs) do
-    for quoted <- to_quoted(attrs) do
-      quoted
-      |> remove_empty_blocks()
-      |> Kino.SmartCell.quoted_to_string()
-    end
-  end
-
-  defp remove_empty_blocks(ast) do
-    Macro.prewalk(ast, fn
-      {node, meta, children} when is_list(children) ->
-        children = Enum.reject(children, &(&1 == {:__block__, [], []}))
-        {node, meta, children}
-
-      other ->
-        other
-    end)
+    for quoted <- to_quoted(attrs), do: Kino.SmartCell.quoted_to_string(quoted)
   end
 
   defp to_quoted(%{"task_id" => "image_classification"} = attrs) do
@@ -994,7 +979,7 @@ defmodule KinoBumblebee.TaskCell do
         {:ok, generation_config} =
           Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
 
-        unquote(maybe_configure_generation(generation_otps))
+        unquote_splicing(maybe_configure_generation(generation_otps))
 
         serving =
           Bumblebee.Vision.image_to_text(
@@ -1262,7 +1247,7 @@ defmodule KinoBumblebee.TaskCell do
         {:ok, generation_config} =
           Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
 
-        unquote(maybe_configure_generation(generation_otps))
+        unquote_splicing(maybe_configure_generation(generation_otps))
 
         serving =
           Bumblebee.Text.generation(model_info, tokenizer, generation_config, unquote(opts))
@@ -1303,7 +1288,7 @@ defmodule KinoBumblebee.TaskCell do
         {:ok, generation_config} =
           Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
 
-        unquote(maybe_configure_generation(generation_otps))
+        unquote_splicing(maybe_configure_generation(generation_otps))
 
         serving =
           Bumblebee.Audio.speech_to_text(
@@ -1362,7 +1347,7 @@ defmodule KinoBumblebee.TaskCell do
         {:ok, generation_config} =
           Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
 
-        unquote(maybe_configure_generation(generation_otps))
+        unquote_splicing(maybe_configure_generation(generation_otps))
 
         serving =
           Bumblebee.Text.conversation(model_info, tokenizer, generation_config, unquote(opts))
@@ -1467,12 +1452,14 @@ defmodule KinoBumblebee.TaskCell do
     []
   end
 
-  defp maybe_configure_generation([]), do: {:__block__, [], []}
+  defp maybe_configure_generation([]), do: []
 
   defp maybe_configure_generation(opts) do
-    quote do
-      generation_config = Bumblebee.configure(generation_config, unquote(opts))
-    end
+    [
+      quote do
+        generation_config = Bumblebee.configure(generation_config, unquote(opts))
+      end
+    ]
   end
 
   defp drop_nil_options(opts) do
