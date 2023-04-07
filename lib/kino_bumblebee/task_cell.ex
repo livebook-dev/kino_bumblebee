@@ -560,7 +560,7 @@ defmodule KinoBumblebee.TaskCell do
           params: [
             %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100},
             %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
-            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 10}
+            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 20}
           ]
         },
         %{
@@ -907,7 +907,22 @@ defmodule KinoBumblebee.TaskCell do
 
   @impl true
   def to_source(attrs) do
-    for quoted <- to_quoted(attrs), do: Kino.SmartCell.quoted_to_string(quoted)
+    for quoted <- to_quoted(attrs) do
+      quoted
+      |> remove_empty_blocks()
+      |> Kino.SmartCell.quoted_to_string()
+    end
+  end
+
+  defp remove_empty_blocks(ast) do
+    Macro.prewalk(ast, fn
+      {node, meta, children} when is_list(children) ->
+        children = Enum.reject(children, &(&1 == {:__block__, [], []}))
+        {node, meta, children}
+
+      other ->
+        other
+    end)
   end
 
   defp to_quoted(%{"task_id" => "image_classification"} = attrs) do
@@ -957,12 +972,13 @@ defmodule KinoBumblebee.TaskCell do
   end
 
   defp to_quoted(%{"task_id" => "image_to_text"} = attrs) do
-    opts =
+    opts = [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+
+    generation_otps =
       drop_nil_options(
         min_new_tokens: attrs["min_new_tokens"],
         max_new_tokens: attrs["max_new_tokens"]
-      ) ++
-        [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+      )
 
     %{generation: generation} = variant_from_attrs(attrs)
 
@@ -975,7 +991,19 @@ defmodule KinoBumblebee.TaskCell do
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
-        serving = Bumblebee.Vision.image_to_text(model_info, featurizer, tokenizer, unquote(opts))
+        {:ok, generation_config} =
+          Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
+
+        unquote(maybe_configure_generation(generation_otps))
+
+        serving =
+          Bumblebee.Vision.image_to_text(
+            model_info,
+            featurizer,
+            tokenizer,
+            generation_config,
+            unquote(opts)
+          )
       end,
       quote do
         image_input = Kino.Input.image("Image", size: {384, 384})
@@ -1214,12 +1242,14 @@ defmodule KinoBumblebee.TaskCell do
 
   defp to_quoted(%{"task_id" => "text_generation"} = attrs) do
     opts =
+      [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    generation_otps =
       drop_nil_options(
         min_new_tokens: attrs["min_new_tokens"],
         max_new_tokens: attrs["max_new_tokens"]
-      ) ++
-        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
-        maybe_defn_options(attrs)
+      )
 
     %{generation: generation} = variant_from_attrs(attrs)
 
@@ -1229,7 +1259,13 @@ defmodule KinoBumblebee.TaskCell do
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
-        serving = Bumblebee.Text.generation(model_info, tokenizer, unquote(opts))
+        {:ok, generation_config} =
+          Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
+
+        unquote(maybe_configure_generation(generation_otps))
+
+        serving =
+          Bumblebee.Text.generation(model_info, tokenizer, generation_config, unquote(opts))
       end,
       quote do
         text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
@@ -1249,10 +1285,9 @@ defmodule KinoBumblebee.TaskCell do
   end
 
   defp to_quoted(%{"task_id" => "speech_to_text"} = attrs) do
-    opts =
-      drop_nil_options(max_new_tokens: attrs["max_new_tokens"]) ++
-        [compile: [batch_size: 1]] ++
-        maybe_defn_options(attrs)
+    opts = [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+
+    generation_otps = drop_nil_options(max_new_tokens: attrs["max_new_tokens"])
 
     %{generation: generation} = variant_from_attrs(attrs)
 
@@ -1265,7 +1300,19 @@ defmodule KinoBumblebee.TaskCell do
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
-        serving = Bumblebee.Audio.speech_to_text(model_info, featurizer, tokenizer, unquote(opts))
+        {:ok, generation_config} =
+          Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
+
+        unquote(maybe_configure_generation(generation_otps))
+
+        serving =
+          Bumblebee.Audio.speech_to_text(
+            model_info,
+            featurizer,
+            tokenizer,
+            generation_config,
+            unquote(opts)
+          )
       end,
       quote do
         audio_input = Kino.Input.audio("Audio", sampling_rate: featurizer.sampling_rate)
@@ -1295,12 +1342,14 @@ defmodule KinoBumblebee.TaskCell do
 
   defp to_quoted(%{"task_id" => "conversation"} = attrs) do
     opts =
+      [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        maybe_defn_options(attrs)
+
+    generation_otps =
       drop_nil_options(
         min_new_tokens: attrs["min_new_tokens"],
         max_new_tokens: attrs["max_new_tokens"]
-      ) ++
-        [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
-        maybe_defn_options(attrs)
+      )
 
     %{generation: generation} = variant_from_attrs(attrs)
 
@@ -1310,7 +1359,13 @@ defmodule KinoBumblebee.TaskCell do
 
         {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
 
-        serving = Bumblebee.Text.conversation(model_info, tokenizer, unquote(opts))
+        {:ok, generation_config} =
+          Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
+
+        unquote(maybe_configure_generation(generation_otps))
+
+        serving =
+          Bumblebee.Text.conversation(model_info, tokenizer, generation_config, unquote(opts))
       end,
       quote do
         frame = Kino.Frame.new()
@@ -1410,6 +1465,14 @@ defmodule KinoBumblebee.TaskCell do
 
   defp to_quoted(_) do
     []
+  end
+
+  defp maybe_configure_generation([]), do: {:__block__, [], []}
+
+  defp maybe_configure_generation(opts) do
+    quote do
+      generation_config = Bumblebee.configure(generation_config, unquote(opts))
+    end
   end
 
   defp drop_nil_options(opts) do
