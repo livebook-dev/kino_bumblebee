@@ -1381,6 +1381,7 @@ defmodule KinoBumblebee.TaskCell do
       drop_nil_options(
         num_steps: attrs["num_steps"],
         num_images_per_prompt: attrs["num_images_per_prompt"],
+        seed: attrs["seed"],
         safety_checker: quote(do: safety_checker),
         safety_checker_featurizer: quote(do: featurizer)
       ) ++
