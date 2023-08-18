@@ -28,8 +28,8 @@ defmodule KinoBumblebee.MixProject do
     [
       {:bumblebee, "~> 0.3.0"},
       {:kino, "~> 0.9"},
-      {:nx, "~> 0.5.0"},
-      {:exla, "~> 0.5.0", only: [:dev, :test]},
+      {:nx, "~> 0.5"},
+      {:exla, "~> 0.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
     ]
   end
