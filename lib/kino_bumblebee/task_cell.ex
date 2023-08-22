@@ -780,7 +780,7 @@ defmodule KinoBumblebee.TaskCell do
     fields =
       for {field, default} <- field_defaults_for(task_id),
           into: fields,
-          do: {field, attrs[field] || default}
+          do: {field, Map.get(attrs, field, default)}
 
     {:ok,
      assign(ctx,
@@ -915,8 +915,7 @@ defmodule KinoBumblebee.TaskCell do
       if(top_k = attrs["top_k"],
         do: [top_k: top_k],
         else: []
-      ) ++
-        [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+      ) ++ [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
 
     %{generation: generation} = variant_from_attrs(attrs)
 
@@ -1227,7 +1226,7 @@ defmodule KinoBumblebee.TaskCell do
 
   defp to_quoted(%{"task_id" => "text_generation"} = attrs) do
     opts =
-      [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+      [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]], stream: true] ++
         maybe_defn_options(attrs)
 
     generation_otps =
@@ -1259,9 +1258,11 @@ defmodule KinoBumblebee.TaskCell do
         frame = Kino.Frame.new()
 
         Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Text.new("Running..."))
-          %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
-          Kino.Frame.render(frame, Kino.Text.new(generated_text))
+          Kino.Frame.clear(frame)
+
+          for chunk <- Nx.Serving.run(serving, text) do
+            Kino.Frame.append(frame, Kino.Text.new(chunk, chunk: true))
+          end
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
