@@ -845,7 +845,6 @@ defmodule KinoBumblebee.TaskCell do
   end
 
   def handle_event("update_field", %{"field" => field, "value" => value}, ctx) do
-    IO.inspect({field, value})
     current_task_id = ctx.assigns.fields["task_id"]
 
     param =
