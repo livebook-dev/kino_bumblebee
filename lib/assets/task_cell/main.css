@@ -129,6 +129,12 @@ select.input {
   text-transform: uppercase;
 }
 
+.input-container {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -234,4 +240,58 @@ a.icon-button img {
   color: var(--gray-900);
   background-color: var(--yellow-100);
   border-color: var(--yellow-600);
+}
+
+/* Switch */
+
+.switch-button {
+  display: inline-block;
+  position: relative;
+  width: 56px;
+  height: 28px;
+  user-select: none;
+}
+
+.switch-button[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.switch-button-checkbox {
+  outline: none;
+  appearance: none;
+  position: absolute;
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  border-radius: 9999px;
+  background-color: white;
+  border: 5px solid var(--gray-200);
+  cursor: pointer;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.switch-button-bg {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 9999px;
+  background-color: var(--gray-200);
+  cursor: pointer;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.switch-button-checkbox:checked {
+  background: white;
+  border-color: var(--blue-600);
+  transform: translateX(100%);
+}
+
+.switch-button-checkbox:checked + .switch-button-bg {
+  background-color: var(--blue-600);
 }

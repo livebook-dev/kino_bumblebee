@@ -560,7 +560,8 @@ defmodule KinoBumblebee.TaskCell do
           params: [
             %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100},
             %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
-            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 20}
+            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 20},
+            %{field: "stream", label: "Stream", type: :boolean, default: true}
           ]
         },
         %{
@@ -780,7 +781,7 @@ defmodule KinoBumblebee.TaskCell do
     fields =
       for {field, default} <- field_defaults_for(task_id),
           into: fields,
-          do: {field, attrs[field] || default}
+          do: {field, Map.get(attrs, field, default)}
 
     {:ok,
      assign(ctx,
@@ -844,6 +845,7 @@ defmodule KinoBumblebee.TaskCell do
   end
 
   def handle_event("update_field", %{"field" => field, "value" => value}, ctx) do
+    IO.inspect({field, value})
     current_task_id = ctx.assigns.fields["task_id"]
 
     param =
@@ -915,8 +917,7 @@ defmodule KinoBumblebee.TaskCell do
       if(top_k = attrs["top_k"],
         do: [top_k: top_k],
         else: []
-      ) ++
-        [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+      ) ++ [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
 
     %{generation: generation} = variant_from_attrs(attrs)
 
@@ -1228,6 +1229,7 @@ defmodule KinoBumblebee.TaskCell do
   defp to_quoted(%{"task_id" => "text_generation"} = attrs) do
     opts =
       [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
+        if(attrs["stream"], do: [stream: true], else: []) ++
         maybe_defn_options(attrs)
 
     generation_otps =
@@ -1252,19 +1254,38 @@ defmodule KinoBumblebee.TaskCell do
         serving =
           Bumblebee.Text.generation(model_info, tokenizer, generation_config, unquote(opts))
       end,
-      quote do
-        text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
-        form = Kino.Control.form([text: text_input], submit: "Run")
+      if attrs["stream"] do
+        quote do
+          text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
+          form = Kino.Control.form([text: text_input], submit: "Run")
 
-        frame = Kino.Frame.new()
+          frame = Kino.Frame.new()
 
-        Kino.listen(form, fn %{data: %{text: text}} ->
-          Kino.Frame.render(frame, Kino.Text.new("Running..."))
-          %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
-          Kino.Frame.render(frame, Kino.Text.new(generated_text))
-        end)
+          Kino.listen(form, fn %{data: %{text: text}} ->
+            Kino.Frame.clear(frame)
 
-        Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+            for chunk <- Nx.Serving.run(serving, text) do
+              Kino.Frame.append(frame, Kino.Text.new(chunk, chunk: true))
+            end
+          end)
+
+          Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+        end
+      else
+        quote do
+          text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
+          form = Kino.Control.form([text: text_input], submit: "Run")
+
+          frame = Kino.Frame.new()
+
+          Kino.listen(form, fn %{data: %{text: text}} ->
+            Kino.Frame.render(frame, Kino.Text.new("Running..."))
+            %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, text)
+            Kino.Frame.render(frame, Kino.Text.new(generated_text))
+          end)
+
+          Kino.Layout.grid([form, frame], boxed: true, gap: 16)
+        end
       end
     ]
   end
