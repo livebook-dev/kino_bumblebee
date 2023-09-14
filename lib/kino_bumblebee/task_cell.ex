@@ -1271,7 +1271,9 @@ defmodule KinoBumblebee.TaskCell do
   end
 
   defp to_quoted(%{"task_id" => "speech_to_text"} = attrs) do
-    opts = [compile: [batch_size: 1]] ++ maybe_defn_options(attrs)
+    opts =
+      [compile: [batch_size: 4], chunk_num_seconds: 30, timestamps: :segments, stream: true] ++
+        maybe_defn_options(attrs)
 
     generation_otps = drop_nil_options(max_new_tokens: attrs["max_new_tokens"])
 
@@ -1292,7 +1294,7 @@ defmodule KinoBumblebee.TaskCell do
         unquote_splicing(maybe_configure_generation(generation_otps))
 
         serving =
-          Bumblebee.Audio.speech_to_text(
+          Bumblebee.Audio.speech_to_text_whisper(
             model_info,
             featurizer,
             tokenizer,
@@ -1308,16 +1310,28 @@ defmodule KinoBumblebee.TaskCell do
 
         Kino.listen(form, fn %{data: %{audio: audio}} ->
           if audio do
-            Kino.Frame.render(frame, Kino.Text.new("Running..."))
-
             audio =
               audio.data
               |> Nx.from_binary(:f32)
               |> Nx.reshape({:auto, audio.num_channels})
               |> Nx.mean(axes: [1])
 
-            %{results: [%{text: generated_text}]} = Nx.Serving.run(serving, audio)
-            Kino.Frame.render(frame, Kino.Text.new(generated_text))
+            Kino.Frame.render(frame, Kino.Text.new("(Start of transcription)", chunk: true))
+
+            for chunk <- Nx.Serving.run(serving, audio) do
+              [start_mark, end_mark] =
+                for seconds <- [chunk.start_timestamp_seconds, chunk.end_timestamp_seconds] do
+                  seconds
+                  |> round()
+                  |> Time.from_seconds_after_midnight()
+                  |> Time.to_string()
+                end
+
+              text = "#{start_mark}-#{end_mark}: #{chunk.text}"
+              Kino.Frame.append(frame, Kino.Text.new("\n" <> text, chunk: true))
+            end
+
+            Kino.Frame.append(frame, Kino.Text.new("\n(End of transcription)", chunk: true))
           end
         end)
 
