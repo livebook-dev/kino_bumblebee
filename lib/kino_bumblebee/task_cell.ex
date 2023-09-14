@@ -1321,21 +1321,10 @@ defmodule KinoBumblebee.TaskCell do
             for chunk <- Nx.Serving.run(serving, audio) do
               [start_mark, end_mark] =
                 for seconds <- [chunk.start_timestamp_seconds, chunk.end_timestamp_seconds] do
-                  seconds = round(seconds)
-
-                  minutes =
-                    seconds
-                    |> div(60)
-                    |> Integer.to_string()
-                    |> String.pad_leading(2, "0")
-
-                  seconds =
-                    seconds
-                    |> rem(60)
-                    |> Integer.to_string()
-                    |> String.pad_leading(2, "0")
-
-                  minutes <> ":" <> seconds
+                  seconds
+                  |> round()
+                  |> Time.from_seconds_after_midnight()
+                  |> Time.to_string()
                 end
 
               text = "#{start_mark}-#{end_mark}: #{chunk.text}"
