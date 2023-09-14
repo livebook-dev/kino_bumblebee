@@ -907,8 +907,19 @@ defmodule KinoBumblebee.TaskCell do
 
   @impl true
   def to_source(attrs) do
-    for quoted <- to_quoted(attrs), do: Kino.SmartCell.quoted_to_string(quoted)
+    attrs |> to_quoted() |> quoted_to_string()
   end
+
+  defp quoted_to_string([comment | tail]) when is_binary(comment) do
+    [head | tail] = quoted_to_string(tail)
+    [comment <> head | tail]
+  end
+
+  defp quoted_to_string([head | tail]) do
+    [Kino.SmartCell.quoted_to_string(head) | quoted_to_string(tail)]
+  end
+
+  defp quoted_to_string([]), do: []
 
   defp to_quoted(%{"task_id" => "image_classification"} = attrs) do
     opts =
@@ -1280,6 +1291,10 @@ defmodule KinoBumblebee.TaskCell do
     %{generation: generation} = variant_from_attrs(attrs)
 
     [
+      """
+      # The serving below can stream up to 4 batches of 30 seconds.
+      # Increase the batch size or use Nx.Serving.batched_run for longer audio.
+      """,
       quote do
         {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
 
