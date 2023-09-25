@@ -1327,8 +1327,8 @@ defmodule KinoBumblebee.TaskCell do
                   |> Time.to_string()
                 end
 
-              text = "#{start_mark}-#{end_mark}: #{chunk.text}"
-              Kino.Frame.append(frame, Kino.Text.new("\n" <> text, chunk: true))
+              text = "\n#{start_mark}-#{end_mark}: #{chunk.text}"
+              Kino.Frame.append(frame, Kino.Text.new(text, chunk: true))
             end
 
             Kino.Frame.append(frame, Kino.Text.new("\n(End of transcription)", chunk: true))
