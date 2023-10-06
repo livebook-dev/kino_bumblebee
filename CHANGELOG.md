@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.0](https://github.com/livebook-dev/kino_bumblebee/tree/v0.4.0) (2023-10-06)
+
+### Added
+
+* Output streaming in the text generation task ([#32](https://github.com/livebook-dev/kino_bumblebee/pull/32))
+* Output streaming in the speech-to-text task ([#32](https://github.com/livebook-dev/kino_bumblebee/pull/34))
+* Timestamps to the speech-to-text task output ([#32](https://github.com/livebook-dev/kino_bumblebee/pull/34))
+
+### Changed
+
+* Updated code generation with audio/image inputs to read from file ([#36](https://github.com/livebook-dev/kino_bumblebee/pull/36))
+* Bumped `bumblebee` and `kino` dependency requirements
+
+### Fixed
+
+* Respect seed in the text-to-image task
+
 ## [v0.3.0](https://github.com/livebook-dev/kino_bumblebee/tree/v0.3.0) (2023-04-14)
 
 ### Added
@@ -26,12 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Updated generated source to rely on enumerable `Kino.Control` ([#27](https://github.com/livebook-dev/kino_bumblebee/pull/27))
-
-### Added
-
-* XLM-RoBERTa models for punctuation and language detection ([#16](https://github.com/livebook-dev/kino_bumblebee/pull/16))
-* Zero-shot text classification task ([#17](https://github.com/livebook-dev/kino_bumblebee/pull/17))
-* Speech-to-text task ([#19](https://github.com/livebook-dev/kino_bumblebee/pull/19))
 
 ## [v0.2.0](https://github.com/livebook-dev/kino_bumblebee/tree/v0.2.0) (2023-03-16)
 

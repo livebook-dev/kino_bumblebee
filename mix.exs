@@ -1,7 +1,7 @@
 defmodule KinoBumblebee.MixProject do
   use Mix.Project
 
-  @version "0.3.0"
+  @version "0.4.0"
   @description "Bumblebee integration with Livebook"
 
   def project do
@@ -27,8 +27,8 @@ defmodule KinoBumblebee.MixProject do
   defp deps do
     [
       {:bumblebee, "~> 0.4.0"},
-      # {:kino, "~> 0.11"},
-      {:kino, github: "livebook-dev/kino", override: true},
+      {:kino, "~> 0.11"},
+      # {:kino, github: "livebook-dev/kino", override: true},
       {:nx, "~> 0.5"},
       {:exla, "~> 0.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
