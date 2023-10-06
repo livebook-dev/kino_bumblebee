@@ -28,7 +28,11 @@ defmodule KinoBumblebee.TaskCellTest do
                    Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
                    image =
-                     image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
+                     image.file_ref
+                     |> Kino.Input.file_path()
+                     |> File.read!()
+                     |> Nx.from_binary(:u8)
+                     |> Nx.reshape({image.height, image.width, 3})
 
                    output = Nx.Serving.run(serving, image)
 
