@@ -939,7 +939,11 @@ defmodule KinoBumblebee.TaskCell do
             Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
             image =
-              image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
+              image.file_ref
+              |> Kino.Input.file_path()
+              |> File.read!()
+              |> Nx.from_binary(:u8)
+              |> Nx.reshape({image.height, image.width, 3})
 
             output = Nx.Serving.run(serving, image)
 
@@ -1000,7 +1004,11 @@ defmodule KinoBumblebee.TaskCell do
             Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
             image =
-              image.data |> Nx.from_binary(:u8) |> Nx.reshape({image.height, image.width, 3})
+              image.file_ref
+              |> Kino.Input.file_path()
+              |> File.read!()
+              |> Nx.from_binary(:u8)
+              |> Nx.reshape({image.height, image.width, 3})
 
             %{results: [%{text: text}]} = Nx.Serving.run(serving, image)
 
@@ -1311,7 +1319,9 @@ defmodule KinoBumblebee.TaskCell do
         Kino.listen(form, fn %{data: %{audio: audio}} ->
           if audio do
             audio =
-              audio.data
+              audio.file_ref
+              |> Kino.Input.file_path()
+              |> File.read!()
               |> Nx.from_binary(:f32)
               |> Nx.reshape({:auto, audio.num_channels})
               |> Nx.mean(axes: [1])
