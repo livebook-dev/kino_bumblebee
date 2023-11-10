@@ -655,14 +655,25 @@ defmodule KinoBumblebee.TaskCell do
               }
             },
             %{
-              id: "whisper_large",
-              label: "Whisper (large multilingual)",
+              id: "whisper_large_v3",
+              label: "Whisper (large v3 multilingual)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/openai/whisper-large",
+              docs_url: "https://huggingface.co/openai/whisper-large-v3",
               generation: %{
-                model_repo_id: "openai/whisper-large",
-                featurizer_repo_id: "openai/whisper-large",
-                tokenizer_repo_id: "openai/whisper-large"
+                model_repo_id: "openai/whisper-large-v3",
+                featurizer_repo_id: "openai/whisper-large-v3",
+                tokenizer_repo_id: "openai/whisper-large-v3"
+              }
+            },
+            %{
+              id: "distil_whisper_large_v2",
+              label: "Distil Whisper (large v2 multilingual)",
+              docs_logo: "huggingface_logo.svg",
+              docs_url: "https://huggingface.co/distil-whisper/distil-large-v2",
+              generation: %{
+                model_repo_id: "distil-whisper/distil-large-v2",
+                featurizer_repo_id: "distil-whisper/distil-large-v2",
+                tokenizer_repo_id: "distil-whisper/distil-large-v2"
               }
             }
           ],
