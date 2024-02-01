@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "esbuild main.js --bundle --minify --outfile=../../lib/assets/task_cell/build/main.js --format=esm --loader:.js=jsx",
+    "dev": "npm run build -- --watch"
+  },
+  "dependencies": {
+    "vue": "^3.4.15"
+  },
+  "devDependencies": {
+    "esbuild": "^0.15.16"
+  }
+}

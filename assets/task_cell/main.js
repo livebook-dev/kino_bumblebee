@@ -1,4 +1,6 @@
-import * as Vue from "https://cdn.jsdelivr.net/npm/vue@3.2.26/dist/vue.esm-browser.prod.js";
+import "./main.css";
+
+import * as Vue from "vue/dist/vue.esm-browser.prod.js";
 
 export async function init(ctx, payload) {
   await Promise.all([
@@ -8,9 +10,6 @@ export async function init(ctx, payload) {
     ),
     ctx.importCSS(
       "https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
-    ),
-    ctx.importCSS(
-      "https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.min.css"
     ),
   ]);
 
@@ -194,7 +193,7 @@ export async function init(ctx, payload) {
                 label="Task"
                 v-model="fields.task_id"
                 selectClass="input"
-                :inline
+                inline
                 :optionGroups="taskOptionGroups"
               />
               <div class="variant-container">
@@ -203,16 +202,16 @@ export async function init(ctx, payload) {
                   label="Using"
                   v-model="fields.variant_id"
                   selectClass="input"
-                  :inline
+                  inline
                   :options="variantOptions"
                 />
                 <a class="icon-button" :href="selectedVariant.docs_url" target="_blank" rel="noreferrer noopener">
-                  <img :src="selectedVariant.docs_logo" />
+                  <img :src="'files/' + selectedVariant.docs_logo" />
                 </a>
               </div>
               <div class="grow"></div>
               <button type="button" @click="toggleHelpBox" class="icon-button">
-                <i class="ri ri-questionnaire-line" aria-hidden="true"></i>
+                <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5.76282 17H20V5H4V18.3851L5.76282 17ZM6.45455 19L2 22.5V4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V18C22 18.5523 21.5523 19 21 19H6.45455ZM11 14H13V16H11V14ZM8.56731 8.81346C8.88637 7.20919 10.302 6 12 6C13.933 6 15.5 7.567 15.5 9.5C15.5 11.433 13.933 13 12 13H11V11H12C12.8284 11 13.5 10.3284 13.5 9.5C13.5 8.67157 12.8284 8 12 8C11.2723 8 10.6656 8.51823 10.5288 9.20577L8.56731 8.81346Z"></path></svg>
               </button>
             </div>
             <div class="help-section" v-if="!showHelpBox">

@@ -1,7 +1,7 @@
 defmodule KinoBumblebee.TaskCell do
   @moduledoc false
 
-  use Kino.JS, assets_path: "lib/assets/task_cell"
+  use Kino.JS, assets_path: "lib/assets/task_cell/build"
   use Kino.JS.Live
   use Kino.SmartCell, name: "Neural Network task"
 
