@@ -884,7 +884,7 @@ defmodule KinoBumblebee.TaskCell do
 
   defp parse_value(text, %{type: :text}), do: text
   defp parse_value("", _param), do: nil
-  defp parse_value(value, %{type: :number}), do: String.to_integer(value)
+  defp parse_value(value, %{type: :number}) when is_binary(value), do: String.to_integer(value)
 
   defp parse_value(value, %{type: :select, options: options}) do
     Enum.find_value(options, fn option ->

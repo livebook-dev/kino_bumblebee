@@ -152,6 +152,7 @@ export default function App({ ctx, payload }) {
                     value={fields[param.field] || ""}
                     onChange={(event) => handleChange(event, false)}
                     onBlur={handleBlur}
+                    fullWidth
                   />
                 </div>
               )}
@@ -331,12 +332,18 @@ function TextField({
   type = "text",
   className,
   required = false,
+  fullWidth = false,
   inputRef,
   startAdornment,
   ...props
 }) {
   return (
-    <div className="flex flex-col">
+    <div
+      className={classNames([
+        "flex max-w-full flex-col",
+        fullWidth ? "w-full" : "w-[20ch]",
+      ])}
+    >
       {label && (
         <label className="color-gray-800 mb-0.5 block text-sm font-medium">
           {label}
@@ -355,7 +362,7 @@ function TextField({
           type={type}
           value={value}
           className={classNames([
-            "bg-transparent px-3 py-2 text-sm text-gray-600 placeholder-gray-400 focus:outline-none",
+            "w-full bg-transparent px-3 py-2 text-sm text-gray-600 placeholder-gray-400 focus:outline-none",
             className,
           ])}
         />
