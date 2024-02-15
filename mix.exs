@@ -26,11 +26,14 @@ defmodule KinoBumblebee.MixProject do
 
   defp deps do
     [
-      {:bumblebee, "~> 0.4.0"},
+      # {:bumblebee, "~> 0.5.0"},
+      {:bumblebee, github: "elixir-nx/bumblebee"},
       # {:kino, "~> 0.13"},
       {:kino, github: "livebook-dev/kino", override: true},
-      {:nx, "~> 0.5"},
-      {:exla, "~> 0.5", only: [:dev, :test]},
+      # {:nx, "~> 0.5"},
+      # {:exla, "~> 0.5", only: [:dev, :test]},
+      {:nx, github: "elixir-nx/nx", sparse: "nx", override: true},
+      {:exla, github: "elixir-nx/nx", sparse: "exla", override: true, only: [:dev, :test]},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
     ]
   end
