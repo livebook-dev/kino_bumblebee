@@ -96,77 +96,6 @@ defmodule KinoBumblebee.TaskCell do
       label: "Text",
       tasks: [
         %{
-          id: "conversation",
-          label: "Conversation",
-          variants: [
-            %{
-              id: "blenderbot_400m",
-              label: "Blenderbot (400M parameters)",
-              docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/facebook/blenderbot-400M-distill",
-              generation: %{
-                model_repo_id: "facebook/blenderbot-400M-distill",
-                tokenizer_repo_id: "facebook/blenderbot-400M-distill"
-              }
-            },
-            %{
-              id: "blenderbot_1b",
-              label: "Blenderbot (1B parameters)",
-              docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/facebook/blenderbot-1B-distill",
-              generation: %{
-                model_repo_id: "facebook/blenderbot-1B-distill",
-                tokenizer_repo_id: "facebook/blenderbot-1B-distill"
-              }
-            },
-            %{
-              id: "blenderbot_3b",
-              label: "Blenderbot (3B parameters)",
-              docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/facebook/blenderbot-3B",
-              generation: %{
-                model_repo_id: "facebook/blenderbot-3B",
-                tokenizer_repo_id: "facebook/blenderbot-3B"
-              }
-            },
-            %{
-              id: "dialogpt_small",
-              label: "DialoGPT (small)",
-              docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/microsoft/DialoGPT-small",
-              generation: %{
-                model_repo_id: "microsoft/DialoGPT-small",
-                tokenizer_repo_id: "gpt2"
-              }
-            },
-            %{
-              id: "dialogpt_medium",
-              label: "DialoGPT (medium)",
-              docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/microsoft/DialoGPT-medium",
-              generation: %{
-                model_repo_id: "microsoft/DialoGPT-medium",
-                tokenizer_repo_id: "gpt2"
-              }
-            },
-            %{
-              id: "dialogpt_large",
-              label: "DialoGPT (large)",
-              docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/microsoft/DialoGPT-large",
-              generation: %{
-                model_repo_id: "microsoft/DialoGPT-large",
-                tokenizer_repo_id: "gpt2"
-              }
-            }
-          ],
-          params: [
-            %{field: "sequence_length", label: "Max input tokens", type: :number, default: 100},
-            %{field: "min_new_tokens", label: "Min new tokens", type: :number, default: nil},
-            %{field: "max_new_tokens", label: "Max new tokens", type: :number, default: 100}
-          ]
-        },
-        %{
           id: "fill_mask",
           label: "Fill-mask",
           variants: [
@@ -1357,55 +1286,6 @@ defmodule KinoBumblebee.TaskCell do
         end)
 
         Kino.Layout.grid([form, frame], boxed: true, gap: 16)
-      end
-    ]
-  end
-
-  defp to_quoted(%{"task_id" => "conversation"} = attrs) do
-    opts =
-      [compile: [batch_size: 1, sequence_length: attrs["sequence_length"]]] ++
-        maybe_defn_options(attrs)
-
-    generation_otps =
-      drop_nil_options(
-        min_new_tokens: attrs["min_new_tokens"],
-        max_new_tokens: attrs["max_new_tokens"]
-      )
-
-    %{generation: generation} = variant_from_attrs(attrs)
-
-    [
-      quote do
-        {:ok, model_info} = Bumblebee.load_model({:hf, unquote(generation.model_repo_id)})
-
-        {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, unquote(generation.tokenizer_repo_id)})
-
-        {:ok, generation_config} =
-          Bumblebee.load_generation_config({:hf, unquote(generation.model_repo_id)})
-
-        unquote_splicing(maybe_configure_generation(generation_otps))
-
-        serving =
-          Bumblebee.Text.conversation(model_info, tokenizer, generation_config, unquote(opts))
-      end,
-      quote do
-        frame = Kino.Frame.new()
-
-        inputs = [message: Kino.Input.text("Message")]
-        form = Kino.Control.form(inputs, submit: "Send message", reset_on_submit: [:message])
-
-        Kino.listen(form, nil, fn %{data: %{message: message}}, history ->
-          Kino.Frame.append(frame, Kino.Markdown.new("**Me:** #{message}"))
-
-          %{text: text, history: history} =
-            Nx.Serving.run(serving, %{text: message, history: history})
-
-          Kino.Frame.append(frame, Kino.Markdown.new("**Bot:** #{text}"))
-
-          {:cont, history}
-        end)
-
-        Kino.Layout.grid([frame, form], boxed: true, gap: 16)
       end
     ]
   end
