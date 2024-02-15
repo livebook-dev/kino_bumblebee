@@ -689,8 +689,7 @@ defmodule KinoBumblebee.TaskCell do
               label: "Number of images",
               type: :number,
               default: 2
-            },
-            %{field: "seed", label: "Seed", type: :number, default: nil}
+            }
           ],
           note:
             "this is a very involved task, the generation can take a long time if you run it on a CPU. To achieve a better quality increase the number of steps, 40 is usually a better default."
@@ -1339,13 +1338,14 @@ defmodule KinoBumblebee.TaskCell do
       end,
       quote do
         text_input = Kino.Input.textarea("Text", default: unquote(generation.default_text))
-        form = Kino.Control.form([text: text_input], submit: "Run")
+        seed_input = Kino.Input.number("Seed")
+        form = Kino.Control.form([text: text_input, seed: seed_input], submit: "Run")
         frame = Kino.Frame.new()
 
-        Kino.listen(form, fn %{data: %{text: text}} ->
+        Kino.listen(form, fn %{data: %{text: text, seed: seed}} ->
           Kino.Frame.render(frame, Kino.Text.new("Running..."))
 
-          output = Nx.Serving.run(serving, text)
+          output = Nx.Serving.run(serving, %{prompt: text, seed: seed})
 
           for result <- output.results do
             Kino.Image.new(result.image)
