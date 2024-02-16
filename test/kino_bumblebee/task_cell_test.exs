@@ -61,7 +61,7 @@ defmodule KinoBumblebee.TaskCellTest do
       assert source ==
                """
                {:ok, model_info} = Bumblebee.load_model({:hf, "ProsusAI/finbert"})
-               {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "bert-base-uncased"})
+               {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, "google-bert/bert-base-uncased"})
 
                serving =
                  Bumblebee.Text.text_classification(model_info, tokenizer,

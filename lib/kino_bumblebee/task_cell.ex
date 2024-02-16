@@ -103,10 +103,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "bert_base_uncased",
               label: "BERT (base uncased)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/bert-base-uncased",
+              docs_url: "https://huggingface.co/google-bert/bert-base-uncased",
               generation: %{
-                model_repo_id: "bert-base-uncased",
-                tokenizer_repo_id: "bert-base-uncased",
+                model_repo_id: "google-bert/bert-base-uncased",
+                tokenizer_repo_id: "google-bert/bert-base-uncased",
                 default_text: "Paris is the [MASK] of France."
               }
             },
@@ -114,10 +114,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "bert_base_cased",
               label: "BERT (base cased)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/bert-base-cased",
+              docs_url: "https://huggingface.co/google-bert/bert-base-cased",
               generation: %{
-                model_repo_id: "bert-base-cased",
-                tokenizer_repo_id: "bert-base-cased",
+                model_repo_id: "google-bert/bert-base-cased",
+                tokenizer_repo_id: "google-bert/bert-base-cased",
                 default_text: "Paris is the [MASK] of France."
               }
             },
@@ -125,10 +125,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "bert_base_multilingual_uncased",
               label: "BERT (base multilingual uncased)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/bert-base-multilingual-uncased",
+              docs_url: "https://huggingface.co/google-bert/bert-base-multilingual-uncased",
               generation: %{
-                model_repo_id: "bert-base-multilingual-uncased",
-                tokenizer_repo_id: "bert-base-multilingual-uncased",
+                model_repo_id: "google-bert/bert-base-multilingual-uncased",
+                tokenizer_repo_id: "google-bert/bert-base-multilingual-uncased",
                 default_text: "Paris est la [MASK] de la France."
               }
             },
@@ -136,10 +136,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "bert_base_multilingual_cased",
               label: "BERT (base multilingual cased)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/bert-base-multilingual-cased",
+              docs_url: "https://huggingface.co/google-bert/bert-base-multilingual-cased",
               generation: %{
-                model_repo_id: "bert-base-multilingual-cased",
-                tokenizer_repo_id: "bert-base-multilingual-cased",
+                model_repo_id: "google-bert/bert-base-multilingual-cased",
+                tokenizer_repo_id: "google-bert/bert-base-multilingual-cased",
                 default_text: "Paris est la [MASK] de la France."
               }
             },
@@ -147,10 +147,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "roberta_base",
               label: "RoBERTa (base)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/roberta-base",
+              docs_url: "https://huggingface.co/FacebookAI/roberta-base",
               generation: %{
-                model_repo_id: "roberta-base",
-                tokenizer_repo_id: "roberta-base",
+                model_repo_id: "FacebookAI/roberta-base",
+                tokenizer_repo_id: "FacebookAI/roberta-base",
                 default_text: "Elixir is a [MASK] programming language."
               }
             },
@@ -158,10 +158,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "distilroberta_base",
               label: "DistilRoBERTa (base)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/distilroberta-base",
+              docs_url: "https://huggingface.co/distilbert/distilroberta-base",
               generation: %{
-                model_repo_id: "distilroberta-base",
-                tokenizer_repo_id: "distilroberta-base",
+                model_repo_id: "distilbert/distilroberta-base",
+                tokenizer_repo_id: "distilbert/distilroberta-base",
                 default_text: "Elixir is a [MASK] programming language."
               }
             },
@@ -169,10 +169,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "xlm_roberta_base",
               label: "XLM-RoBERTa (base)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/xlm-roberta-base",
+              docs_url: "https://huggingface.co/FacebookAI/xlm-roberta-base",
               generation: %{
-                model_repo_id: "xlm-roberta-base",
-                tokenizer_repo_id: "xlm-roberta-base",
+                model_repo_id: "FacebookAI/xlm-roberta-base",
+                tokenizer_repo_id: "FacebookAI/xlm-roberta-base",
                 default_text: "Elixir is a [MASK] programming language."
               }
             },
@@ -180,10 +180,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "albert_base_v2",
               label: "ALBERT (base v2)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/albert-base-v2",
+              docs_url: "https://huggingface.co/albert/albert-base-v2",
               generation: %{
-                model_repo_id: "albert-base-v2",
-                tokenizer_repo_id: "albert-base-v2",
+                model_repo_id: "albert/albert-base-v2",
+                tokenizer_repo_id: "albert/albert-base-v2",
                 default_text: "Paris is the [MASK] of France."
               }
             }
@@ -201,10 +201,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "distilbert_base_cased",
               label: "DistilBERT (base cased)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+              docs_url: "https://huggingface.co/distilbert/distilbert-base-cased-distilled-squad",
               generation: %{
-                model_repo_id: "distilbert-base-cased-distilled-squad",
-                tokenizer_repo_id: "distilbert-base-cased-distilled-squad",
+                model_repo_id: "distilbert/distilbert-base-cased-distilled-squad",
+                tokenizer_repo_id: "distilbert/distilbert-base-cased-distilled-squad",
                 default_question: "Where do I live?",
                 default_context: "My name is Sarah and I live in London."
               }
@@ -213,10 +213,12 @@ defmodule KinoBumblebee.TaskCell do
               id: "bert_large_uncased",
               label: "BERT (large uncased)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+              docs_url: "google-bert/bert-large-uncased-whole-word-masking-finetuned-squad",
               generation: %{
-                model_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
-                tokenizer_repo_id: "bert-large-uncased-whole-word-masking-finetuned-squad",
+                model_repo_id:
+                  "google-bert/bert-large-uncased-whole-word-masking-finetuned-squad",
+                tokenizer_repo_id:
+                  "google-bert/bert-large-uncased-whole-word-masking-finetuned-squad",
                 default_question: "What's my name?",
                 default_context: "My name is Clara and I live in Berkeley."
               }
@@ -225,10 +227,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "roberta_base",
               label: "RoBERTa (base)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/distilbert-base-cased-distilled-squad",
+              docs_url: "https://huggingface.co/deepset/roberta-base-squad2",
               generation: %{
                 model_repo_id: "deepset/roberta-base-squad2",
-                tokenizer_repo_id: "roberta-base",
+                tokenizer_repo_id: "FacebookAI/roberta-base",
                 default_question: "Where do I live?",
                 default_context: "My name is Wolfgang and I live in Berlin"
               }
@@ -282,7 +284,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-emoji",
               generation: %{
                 model_repo_id: "cardiffnlp/twitter-roberta-base-emoji",
-                tokenizer_repo_id: "roberta-base",
+                tokenizer_repo_id: "FacebookAI/roberta-base",
                 default_text: "Machine Learning is on fire this year"
               }
             },
@@ -293,7 +295,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/cardiffnlp/twitter-roberta-base-offensive",
               generation: %{
                 model_repo_id: "cardiffnlp/twitter-roberta-base-offensive",
-                tokenizer_repo_id: "roberta-base",
+                tokenizer_repo_id: "FacebookAI/roberta-base",
                 default_text: "I'm not sure what to think about this."
               }
             },
@@ -326,7 +328,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/ProsusAI/finbert",
               generation: %{
                 model_repo_id: "ProsusAI/finbert",
-                tokenizer_repo_id: "bert-base-uncased",
+                tokenizer_repo_id: "google-bert/bert-base-uncased",
                 default_text:
                   "Our stock predictions indicate that we can expect a rapid growth over the next year."
               }
@@ -348,7 +350,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/dslim/bert-base-NER",
               generation: %{
                 model_repo_id: "dslim/bert-base-NER",
-                tokenizer_repo_id: "bert-base-cased",
+                tokenizer_repo_id: "google-bert/bert-base-cased",
                 default_text:
                   "Rachel Green works at Ralph Lauren in New York City in the sitcom Friends."
               }
@@ -360,7 +362,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/vblagoje/bert-english-uncased-finetuned-pos",
               generation: %{
                 model_repo_id: "vblagoje/bert-english-uncased-finetuned-pos",
-                tokenizer_repo_id: "bert-base-uncased",
+                tokenizer_repo_id: "google-bert/bert-base-uncased",
                 default_text:
                   "Elixir is a dynamic, functional language for building scalable and maintainable applications."
               }
@@ -372,7 +374,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/KoichiYasuoka/roberta-base-english-upos",
               generation: %{
                 model_repo_id: "KoichiYasuoka/roberta-base-english-upos",
-                tokenizer_repo_id: "roberta-base",
+                tokenizer_repo_id: "FacebookAI/roberta-base",
                 default_text:
                   "Elixir is a dynamic, functional language for building scalable and maintainable applications."
               }
@@ -410,10 +412,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "gpt2",
               label: "GPT2 (base)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/gpt2",
+              docs_url: "https://huggingface.co/openai-community/gpt2",
               generation: %{
-                model_repo_id: "gpt2",
-                tokenizer_repo_id: "gpt2",
+                model_repo_id: "openai-community/gpt2",
+                tokenizer_repo_id: "openai-community/gpt2",
                 default_text: "Yesterday, I was reading a book and"
               }
             },
@@ -421,10 +423,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "gpt2_medium",
               label: "GPT2 (medium)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/gpt2-medium",
+              docs_url: "https://huggingface.co/openai-community/gpt2-medium",
               generation: %{
-                model_repo_id: "gpt2-medium",
-                tokenizer_repo_id: "gpt2-medium",
+                model_repo_id: "openai-community/gpt2-medium",
+                tokenizer_repo_id: "openai-community/gpt2-medium",
                 default_text: "Yesterday, I was reading a book and"
               }
             },
@@ -432,10 +434,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "gpt2_large",
               label: "GPT2 (large)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/gpt2-large",
+              docs_url: "https://huggingface.co/openai-community/gpt2-large",
               generation: %{
-                model_repo_id: "gpt2-large",
-                tokenizer_repo_id: "gpt2-large",
+                model_repo_id: "openai-community/gpt2-large",
+                tokenizer_repo_id: "openai-community/gpt2-large",
                 default_text: "Yesterday, I was reading a book and"
               }
             },
@@ -443,10 +445,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "gpt2_xl",
               label: "GPT2 (xl)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/gpt2-xl",
+              docs_url: "https://huggingface.co/openai-community/gpt2-xl",
               generation: %{
-                model_repo_id: "gpt2-xl",
-                tokenizer_repo_id: "gpt2-xl",
+                model_repo_id: "openai-community/gpt2-xl",
+                tokenizer_repo_id: "openai-community/gpt2-xl",
                 default_text: "Yesterday, I was reading a book and"
               }
             },
@@ -454,10 +456,10 @@ defmodule KinoBumblebee.TaskCell do
               id: "distilgpt2",
               label: "DistilGPT2 (base)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/distilgpt2",
+              docs_url: "https://huggingface.co/distilbert/distilgpt2",
               generation: %{
-                model_repo_id: "distilgpt2",
-                tokenizer_repo_id: "distilgpt2",
+                model_repo_id: "distilbert/distilgpt2",
+                tokenizer_repo_id: "distilbert/distilgpt2",
                 default_text: "Yesterday, I was reading a book and"
               }
             },
@@ -514,7 +516,7 @@ defmodule KinoBumblebee.TaskCell do
               docs_url: "https://huggingface.co/joeddav/xlm-roberta-large-xnli",
               generation: %{
                 model_repo_id: "joeddav/xlm-roberta-large-xnli",
-                tokenizer_repo_id: "xlm-roberta-large",
+                tokenizer_repo_id: "FacebookAI/xlm-roberta-large",
                 default_text: "Un jour je verrai le monde."
               }
             }
