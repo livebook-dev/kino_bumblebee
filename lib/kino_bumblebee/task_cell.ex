@@ -690,7 +690,7 @@ defmodule KinoBumblebee.TaskCell do
               field: "num_images_per_prompt",
               label: "Number of images",
               type: :number,
-              default: 2
+              default: 1
             }
           ],
           note:
