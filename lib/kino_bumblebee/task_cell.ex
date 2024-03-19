@@ -635,7 +635,7 @@ defmodule KinoBumblebee.TaskCell do
               id: "stable_diffusion_anime",
               label: "Stable Diffusion (anime)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/Linaqruf/anything-v3.0",
+              docs_url: "https://huggingface.co/AdamOswald1/Anything-Preservation",
               generation: %{
                 repo_id: "Linaqruf/anything-v3.0",
                 default_text:
