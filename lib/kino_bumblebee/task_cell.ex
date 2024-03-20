@@ -635,9 +635,9 @@ defmodule KinoBumblebee.TaskCell do
               id: "stable_diffusion_anime",
               label: "Stable Diffusion (anime)",
               docs_logo: "huggingface_logo.svg",
-              docs_url: "https://huggingface.co/Linaqruf/anything-v3.0",
+              docs_url: "https://huggingface.co/AdamOswald1/Anything-Preservation",
               generation: %{
-                repo_id: "Linaqruf/anything-v3.0",
+                repo_id: "AdamOswald1/Anything-Preservation",
                 default_text:
                   "scenery, shibuya tokyo, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset"
               }
