@@ -27,8 +27,7 @@ defmodule KinoBumblebee.MixProject do
   defp deps do
     [
       {:bumblebee, "~> 0.5.0"},
-      # {:kino, "~> 0.13"},
-      {:kino, github: "livebook-dev/kino", override: true},
+      {:kino, "~> 0.13"},
       {:nx, "~> 0.7"},
       {:exla, "~> 0.7", only: [:dev, :test]},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}
